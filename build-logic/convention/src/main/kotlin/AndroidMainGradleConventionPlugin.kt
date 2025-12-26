@@ -1,12 +1,11 @@
 import com.android.build.api.dsl.ApplicationExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
 import utility.configureKotlinAndroid
 import utility.libs
 
-class AndroidApplicationConventionPlugin : Plugin<Project> {
+class AndroidMainGradleConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) {
         with(target){
 

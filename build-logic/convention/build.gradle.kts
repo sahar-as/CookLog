@@ -26,12 +26,7 @@ gradlePlugin {
     plugins {
         register( "androidApplication"){
             id = "cooklog.android.application"
-            implementationClass = "AndroidApplicationConventionPlugin"
-        }
-
-        register("androidLibrary"){
-            id = "cooklog.android.library"
-            implementationClass = "AndroidLibraryConventionPlugin"
+            implementationClass = "AndroidMainGradleConventionPlugin"
         }
 
         register("kmpConfig") {
