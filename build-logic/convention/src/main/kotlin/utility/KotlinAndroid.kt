@@ -19,7 +19,6 @@ internal fun Project.configureKotlinAndroid(commonExtension: CommonExtension<*, 
         compileOptions {
             sourceCompatibility = JavaVersion.VERSION_17
             targetCompatibility = JavaVersion.VERSION_17
-            isCoreLibraryDesugaringEnabled = true
         }
     }
     tasks.withType<KotlinCompile>().configureEach {

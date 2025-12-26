@@ -12,13 +12,13 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
 
             with(pluginManager) {
                 apply("com.android.application")
-                apply("org.jetbrains.kotlin.android")
+                apply("org.jetbrains.kotlin.multiplatform")
             }
 
             extensions.configure<ApplicationExtension> {
                 configureKotlinAndroid(this)
                 defaultConfig.targetSdk =
-                    Integer.parseInt(libs.findVersion("targetSdkVersion").get().toString())
+                    Integer.parseInt(libs.findVersion("android-targetSdk").get().toString())
             }
         }
     }

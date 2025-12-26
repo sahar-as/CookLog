@@ -33,5 +33,10 @@ gradlePlugin {
             id = "cooklog.android.library"
             implementationClass = "AndroidLibraryConventionPlugin"
         }
+
+        register("kmpConfig") {
+            id = "telewebion.kmp.gradle"
+            implementationClass = "KmpConventionPlugin"
+        }
     }
 }
