@@ -17,7 +17,7 @@ class AndroidMainGradleConventionPlugin : Plugin<Project> {
             extensions.configure<ApplicationExtension> {
                 configureKotlinAndroid(this)
                 defaultConfig.targetSdk =
-                    Integer.parseInt(libs.findVersion("android-targetSdk").get().toString())
+                    libs.findVersion("android-targetSdk").get().requiredVersion.toInt()
             }
         }
     }
