@@ -1,5 +1,4 @@
 plugins {
-//    alias(libs.plugins.androidKotlinMultiplatformLibrary)
     id("cooklog.android.application")
     id("cooklog.kmp.commoncompose")
 }
