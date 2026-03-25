@@ -20,6 +20,9 @@ kotlin {
 dependencies {
     compileOnly(libs.android.gradlePlugin)
     compileOnly(libs.kotlin.gradlePlugin)
+
+    compileOnly(libs.gradle.plugin.compose)
+    compileOnly(libs.gradle.plugin.compose.compiler)
 }
 
 gradlePlugin {
@@ -30,8 +33,13 @@ gradlePlugin {
         }
 
         register("kmpConfig") {
-            id = "telewebion.kmp.gradle"
+            id = "cooklog.kmp.gradle"
             implementationClass = "KmpConventionPlugin"
+        }
+
+        register("CommonCompose"){
+            id = "cooklog.kmp.commoncompose"
+            implementationClass = "CommonComposeConventionPlugin"
         }
     }
 }
