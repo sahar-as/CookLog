@@ -1,5 +1,5 @@
 plugins {
-    id("cooklog.android.application")
+    id("cooklog.android.library")
     id("cooklog.kmp.commoncompose")
 }
 
@@ -20,9 +20,8 @@ kotlin {
             implementation(libs.kotlin.test)
         }
     }
-}
 
-
-android {
-    namespace = "com.saharapps.catalog"
+    androidLibrary {
+        namespace = "com.saharapps.catalog"
+    }
 }

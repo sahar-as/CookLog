@@ -1,3 +1,4 @@
+import com.android.build.api.dsl.androidLibrary
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
@@ -5,9 +6,13 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
 fun Project.initializeAndroidTarget() {
     extensions.configure<KotlinMultiplatformExtension> {
-        androidTarget {
-            compilerOptions {
-                jvmTarget.set(JvmTarget.JVM_17)
+        if (pluginManager.hasPlugin("com.android.kotlin.multiplatform.library")) {
+            androidLibrary {
+                compilerOptions { jvmTarget.set(JvmTarget.JVM_17) }
+            }
+        } else {
+            androidTarget {
+                compilerOptions { jvmTarget.set(JvmTarget.JVM_17) }
             }
         }
     }

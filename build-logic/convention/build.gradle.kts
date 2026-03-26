@@ -32,6 +32,11 @@ gradlePlugin {
             implementationClass = "AndroidMainGradleConventionPlugin"
         }
 
+        register("AndroidLibrary"){
+            id = "cooklog.android.library"
+            implementationClass = "AndroidLibraryConventionPlugin"
+        }
+
         register("kmpConfig") {
             id = "cooklog.kmp.gradle"
             implementationClass = "KmpConventionPlugin"
