@@ -24,5 +24,5 @@ kotlin {
 
 
 android {
-    namespace = "om.saharapps.catalog"
+    namespace = "com.saharapps.catalog"
 }

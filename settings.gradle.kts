@@ -30,4 +30,4 @@ dependencyResolutionManagement {
 }
 
 include(":composeApp")
-include(":Catalog")
+include(":feature:Catalog")
