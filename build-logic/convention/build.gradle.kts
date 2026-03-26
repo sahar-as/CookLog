@@ -1,3 +1,4 @@
+import org.gradle.kotlin.dsl.implementation
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -20,9 +21,10 @@ kotlin {
 dependencies {
     compileOnly(libs.android.gradlePlugin)
     compileOnly(libs.kotlin.gradlePlugin)
-
     compileOnly(libs.gradle.plugin.compose)
     compileOnly(libs.gradle.plugin.compose.compiler)
+
+    implementation(libs.gradle.plugin.serialization)
 }
 
 gradlePlugin {
