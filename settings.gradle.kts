@@ -32,3 +32,4 @@ dependencyResolutionManagement {
 include(":composeApp")
 include(":feature:Catalog")
 include(":core:navigation")
+include(":feature:recipe")
