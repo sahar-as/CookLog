@@ -13,8 +13,17 @@ kotlin {
             implementation(libs.androidx.activity.compose)
         }
         commonMain.dependencies {
-            implementation(libs.androidx.lifecycle.viewmodelCompose)
-            implementation(libs.androidx.lifecycle.runtimeCompose)
+            libs.apply {
+                implementation(androidx.lifecycle.viewmodelCompose)
+                implementation(androidx.lifecycle.runtimeCompose)
+                implementation(androidx.navigation)
+            }
+
+            projects.apply {
+                implementation(core.navigation)
+                implementation(feature.catalog)
+                implementation(feature.recipe)
+            }
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

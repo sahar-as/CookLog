@@ -12,7 +12,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 
 @Composable
-fun Catalog() {
+fun CatalogScreen(
+    onClickCatalog: () -> Unit,
+) {
     Column(
         modifier = Modifier
             .background(MaterialTheme.colorScheme.onSurface)
