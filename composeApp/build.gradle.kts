@@ -5,7 +5,7 @@ plugins {
 
 kotlin {
     initializeAndroidTarget()
-    initializeFramework()
+    initializeFramework("ComposeApp")
 
     sourceSets {
         androidMain.dependencies {

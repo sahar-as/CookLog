@@ -27,7 +27,7 @@ fun Project.initializeFramework(name: String) {
         ).forEach { iosTarget ->
             iosTarget.binaries.framework {
                 baseName = name
-                isStatic = false
+                isStatic = true
                 linkerOpts.add("-lsqlite3")
             }
         }
