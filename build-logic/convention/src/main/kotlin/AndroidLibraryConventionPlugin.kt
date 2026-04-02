@@ -5,7 +5,6 @@ import org.gradle.api.artifacts.VersionCatalogsExtension
 import org.gradle.internal.Actions.with
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.getByType
-import org.jetbrains.compose.ComposeExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
 class AndroidLibraryConventionPlugin : Plugin<Project> {
@@ -24,6 +23,10 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
                 androidLibrary {
                     compileSdk = 34
                     minSdk = 24
+
+                    androidResources {
+                        enable = true
+                    }
                 }
 
                 sourceSets.apply {
