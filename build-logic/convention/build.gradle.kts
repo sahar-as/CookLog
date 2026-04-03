@@ -25,6 +25,8 @@ dependencies {
     compileOnly(libs.gradle.plugin.compose.compiler)
 
     implementation(libs.gradle.plugin.serialization)
+    compileOnly(libs.gradle.plugin.ksp)
+    compileOnly(libs.gradle.plugin.room)
 }
 
 gradlePlugin {
@@ -47,6 +49,10 @@ gradlePlugin {
         register("CommonCompose"){
             id = "cooklog.kmp.commoncompose"
             implementationClass = "CommonComposeConventionPlugin"
+        }
+        register("Room"){
+            id = "cooklog.kmp.room"
+            implementationClass = "RoomConventionPlugin"
         }
     }
 }

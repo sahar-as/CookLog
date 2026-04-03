@@ -19,6 +19,8 @@ core = "1.5.0"
 kotlinxSerialization = "1.8.1"
 navigation = "2.9.2"
 composeIcon = "1.7.3"
+ksp = "2.2.21-2.0.5"
+room = "2.7.0-beta01"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -43,10 +45,16 @@ androidx-navigation = { group = "org.jetbrains.androidx.navigation", name = "nav
 
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
 
+androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
+androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
+sqlite-bundled = { group = "androidx.sqlite", name = "sqlite-bundled", version.ref = "room" }
+
 #gradle plugins
 gradle-plugin-compose = { module = "org.jetbrains.compose:compose-gradle-plugin", version.ref = "composeMultiplatform" }
 gradle-plugin-compose-compiler = { module = "org.jetbrains.kotlin:compose-compiler-gradle-plugin", version.ref = "kotlin" }
 gradle-plugin-serialization = { group = "org.jetbrains.kotlin", name = "kotlin-serialization", version.ref = "kotlin" }
+gradle-plugin-ksp = { module = "com.google.devtools.ksp:com.google.devtools.ksp.gradle.plugin", version.ref = "ksp" }
+gradle-plugin-room = { module = "androidx.room:room-gradle-plugin", version.ref = "room" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "gradle" }
@@ -58,3 +66,5 @@ kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 androidKotlinMultiplatformLibrary = { id = "com.android.kotlin.multiplatform.library", version.ref = "gradle" }
 androidLint = { id = "com.android.lint", version.ref = "gradle" }
 kotlinxSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+androidx-room = { id = "androidx.room", version.ref = "room" }
