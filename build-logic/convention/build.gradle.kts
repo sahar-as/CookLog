@@ -54,5 +54,9 @@ gradlePlugin {
             id = "cooklog.kmp.room"
             implementationClass = "RoomConventionPlugin"
         }
+        register("Koin"){
+            id = "cooklog.cmp.koin"
+            implementationClass = "KoinConventionPlugin"
+        }
     }
 }

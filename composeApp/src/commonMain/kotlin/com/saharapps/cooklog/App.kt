@@ -4,12 +4,17 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.navigation.compose.rememberNavController
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.koin.compose.KoinApplication
 
 @Composable
 @Preview
 fun App() {
-    MaterialTheme {
-        val navController = rememberNavController()
-        CookLogNavHost(navController)
+    KoinApplication(application = {
+        modules(appModule)
+    }) {
+        MaterialTheme {
+            val navController = rememberNavController()
+            CookLogNavHost(navController)
+        }
     }
 }
