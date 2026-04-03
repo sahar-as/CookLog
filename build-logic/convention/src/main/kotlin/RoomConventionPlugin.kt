@@ -20,12 +20,13 @@ class RoomConventionPlugin : Plugin<Project>{
             val libs = extensions.getByType<VersionCatalogsExtension>().named("libs")
 
             val roomCompiler = libs.findLibrary("androidx-room-compiler").get()
+            val roomRuntime = libs.findLibrary("androidx-room-runtime").get()
 
             plugins.withId("org.jetbrains.kotlin.multiplatform") {
-
                 afterEvaluate {
                     dependencies {
                         add("kspCommonMainMetadata", roomCompiler)
+                        add("commonMainImplementation", roomRuntime)
 
                         listOf(
                             "kspAndroid",
