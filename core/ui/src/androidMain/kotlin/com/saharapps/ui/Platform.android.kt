@@ -1,0 +1,3 @@
+package com.saharapps.ui
+
+actual fun platform() = "Android"

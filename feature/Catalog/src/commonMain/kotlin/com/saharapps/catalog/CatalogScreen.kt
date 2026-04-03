@@ -1,5 +1,6 @@
 package com.saharapps.catalog
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -22,6 +23,7 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -30,11 +32,14 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -54,6 +59,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import com.saharapps.catalog.utils.Constant
 import com.saharapps.common.rememberImagePicker
+import com.saharapps.ui.theme.LightColorScheme
 import cooklog.feature.catalog.generated.resources.Res
 import cooklog.feature.catalog.generated.resources.default
 import org.jetbrains.compose.resources.painterResource
@@ -78,59 +84,84 @@ fun CatalogScreen(onClickCatalog: () -> Unit) {
         it.name.contains(searchQuery, ignoreCase = true)
     }
 
-    if (showAddDialog) {
-        AddCatalogDialog(
-            onDismiss = { showAddDialog = false },
-            onConfirm = { name, imageSource ->
-                recipeList.add(RecipeItem(name, imageSource))
-                showAddDialog = false
-            }
-        )
-    }
-
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    if (!isSearchExpanded) {
-                        Text(Constant.CATALOGS)
-                    } else {
-                        TextField(
-                            value = searchQuery,
-                            onValueChange = { searchQuery = it },
-                            modifier = Modifier.fillMaxWidth().focusRequester(focusRequester),
-                            placeholder = { Text(Constant.SEARCH_HINT) },
-                            singleLine = true
-                        )
-                        LaunchedEffect(Unit) { focusRequester.requestFocus() }
-                    }
-                },
-                actions = {
-                    IconButton(onClick = {
-                        isSearchExpanded = !isSearchExpanded
-                        if (!isSearchExpanded) searchQuery = ""
-                    }) {
-                        Icon(
-                            imageVector = if (isSearchExpanded) Icons.Default.Close else Icons.Default.Search,
-                            contentDescription = null
-                        )
-                    }
+    MaterialTheme(colorScheme = LightColorScheme) {
+        if (showAddDialog) {
+            AddCatalogDialog(
+                onDismiss = { showAddDialog = false },
+                onConfirm = { name, imageSource ->
+                    recipeList.add(RecipeItem(name, imageSource))
+                    showAddDialog = false
                 }
             )
-        },
-        floatingActionButton = {
-            FloatingActionButton(onClick = { showAddDialog = true }) {
-                Icon(
-                    Icons.Default.Add,
-                    contentDescription = Constant.ADD_ITEM
-                )
-            }
         }
-    ) { innerPadding ->
-        CatalogGrid(
-            padding = innerPadding,
-            recipes = filteredRecipes
-        )
+
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        titleContentColor = MaterialTheme.colorScheme.onPrimary,
+                        actionIconContentColor = MaterialTheme.colorScheme.onPrimary
+                    ),
+                    title = {
+                        if (!isSearchExpanded) {
+                            Text(Constant.CATALOGS)
+                        } else {
+                            TextField(
+                                value = searchQuery,
+                                onValueChange = { searchQuery = it },
+                                modifier = Modifier.fillMaxWidth().focusRequester(focusRequester),
+                                placeholder = {
+                                    Text(
+                                        Constant.SEARCH_HINT,
+                                        color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f)
+                                    )
+                                },
+                                colors = TextFieldDefaults.colors(
+                                    focusedContainerColor = Color.Transparent,
+                                    unfocusedContainerColor = Color.Transparent,
+                                    cursorColor = MaterialTheme.colorScheme.onPrimary,
+                                    focusedTextColor = MaterialTheme.colorScheme.onPrimary,
+                                    unfocusedTextColor = MaterialTheme.colorScheme.onPrimary,
+                                    focusedIndicatorColor = Color.White,
+                                    unfocusedIndicatorColor = Color.White.copy(alpha = 0.5f)
+                                ),
+                                singleLine = true
+                            )
+                            LaunchedEffect(Unit) { focusRequester.requestFocus() }
+                        }
+                    },
+                    actions = {
+                        IconButton(onClick = {
+                            isSearchExpanded = !isSearchExpanded
+                            if (!isSearchExpanded) searchQuery = ""
+                        }) {
+                            Icon(
+                                imageVector = if (isSearchExpanded) Icons.Default.Close else Icons.Default.Search,
+                                contentDescription = null
+                            )
+                        }
+                    }
+                )
+            },
+            floatingActionButton = {
+                FloatingActionButton(
+                    onClick = { showAddDialog = true },
+                    containerColor = MaterialTheme.colorScheme.secondary,
+                    contentColor = MaterialTheme.colorScheme.onSecondary
+                ) {
+                    Icon(
+                        Icons.Default.Add,
+                        contentDescription = Constant.ADD_ITEM
+                    )
+                }
+            }
+        ) { innerPadding ->
+            CatalogGrid(
+                padding = innerPadding,
+                recipes = filteredRecipes
+            )
+        }
     }
 }
 
@@ -138,10 +169,13 @@ fun CatalogScreen(onClickCatalog: () -> Unit) {
 fun CatalogGrid(padding: PaddingValues, recipes: List<RecipeItem>) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
-        modifier = Modifier.fillMaxSize().padding(padding),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(padding)
+            .background(MaterialTheme.colorScheme.primaryContainer),
         contentPadding = PaddingValues(12.dp),
         horizontalArrangement = Arrangement.spacedBy(12.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         items(recipes) { recipe ->
             CatalogCard(item = recipe)
@@ -210,25 +244,41 @@ fun AddCatalogDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(Constant.CREATE_NEW_CATALOG) },
+        containerColor = MaterialTheme.colorScheme.primaryContainer,
+        title = {
+            Text(
+                Constant.CREATE_NEW_CATALOG,
+                color = MaterialTheme.colorScheme.primary
+            )
+        },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 OutlinedTextField(
                     value = name,
                     onValueChange = { name = it },
                     label = { Text(Constant.NAME) },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                        focusedLabelColor = MaterialTheme.colorScheme.primary
+                    )
                 )
 
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Button(onClick = { picker.launch() }) {
-                        Text(Constant.GALLERY)
+                    Button(
+                        onClick = { picker.launch() },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.secondary
+                        )
+                    ) {
+                        Text(Constant.GALLERY, color = MaterialTheme.colorScheme.onSecondary)
                     }
 
-                    OutlinedButton(onClick = {
-                        selectedImage = CatalogImage.Resource(Res.drawable.default)
-                    }) {
-                        Text(Constant.DEFAULT)
+                    OutlinedButton(
+                        onClick = { selectedImage = CatalogImage.Resource(Res.drawable.default) },
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
+                    ) {
+                        Text(Constant.DEFAULT, color = MaterialTheme.colorScheme.primary)
                     }
                 }
 
@@ -252,18 +302,29 @@ fun AddCatalogDialog(
                         )
                     }
 
-                    null -> Text(Constant.NO_IMAGE_SELECTED, style = MaterialTheme.typography.bodySmall)
+                    null -> Text(
+                        Constant.NO_IMAGE_SELECTED,
+                        style = MaterialTheme.typography.bodySmall
+                    )
                 }
             }
         },
         confirmButton = {
             Button(
                 enabled = name.isNotBlank() && selectedImage != null,
-                onClick = { onConfirm(name, selectedImage!!) }
-            ) { Text(Constant.CREATE) }
+                onClick = { onConfirm(name, selectedImage!!) },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.secondary
+                )
+            ) { Text(Constant.CREATE, color = MaterialTheme.colorScheme.onSecondary) }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text(Constant.CANCEL) }
+            TextButton(onClick = onDismiss) {
+                Text(
+                    Constant.CANCEL,
+                    color = MaterialTheme.colorScheme.onSecondary.copy(alpha = 0.6f)
+                )
+            }
         }
     )
 }

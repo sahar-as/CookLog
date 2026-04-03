@@ -18,7 +18,6 @@ kotlin {
 
             projects.apply {
                 implementation(core.common)
-                implementation(core.ui)
             }
         }
         commonTest.dependencies {
@@ -27,6 +26,6 @@ kotlin {
     }
 
     androidLibrary {
-        namespace = "com.saharapps.catalog"
+        namespace = "com.saharapps.ui"
     }
 }
