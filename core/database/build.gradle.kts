@@ -1,6 +1,5 @@
 plugins {
     id("cooklog.android.library")
-    id("cooklog.kmp.commoncompose")
 }
 
 kotlin {
@@ -9,11 +8,8 @@ kotlin {
 
     sourceSets {
         androidMain.dependencies {
-            implementation(compose.preview)
-            implementation(libs.androidx.activity.compose)
         }
         commonMain.dependencies {
-            implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.androidx.lifecycle.runtimeCompose)
         }
         commonTest.dependencies {
@@ -22,6 +18,6 @@ kotlin {
     }
 
     androidLibrary {
-        namespace = "com.saharapps.ui"
+        namespace = "com.saharapps.database"
     }
 }
