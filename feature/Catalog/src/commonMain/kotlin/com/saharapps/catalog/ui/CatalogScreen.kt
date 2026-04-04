@@ -1,4 +1,4 @@
-package com.saharapps.catalog
+package com.saharapps.catalog.ui
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -57,6 +57,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
+import com.saharapps.catalog.CatalogImage
+import com.saharapps.catalog.CatalogItem
 import com.saharapps.catalog.utils.Constant
 import com.saharapps.common.rememberImagePicker
 import com.saharapps.ui.theme.LightColorScheme
@@ -76,8 +78,8 @@ fun CatalogScreen(onClickCatalog: () -> Unit) {
 
     val recipeList = remember { //todo we will get this from database
         mutableStateListOf(
-            RecipeItem("Pasta", CatalogImage.Resource(Res.drawable.default)),
-            RecipeItem("Pizza", CatalogImage.Resource(Res.drawable.default))
+            CatalogItem("Pasta", CatalogImage.Resource(Res.drawable.default)),
+            CatalogItem("Pizza", CatalogImage.Resource(Res.drawable.default))
         )
     }
     val filteredRecipes = recipeList.filter {
@@ -89,7 +91,7 @@ fun CatalogScreen(onClickCatalog: () -> Unit) {
             AddCatalogDialog(
                 onDismiss = { showAddDialog = false },
                 onConfirm = { name, imageSource ->
-                    recipeList.add(RecipeItem(name, imageSource))
+                    recipeList.add(CatalogItem(name, imageSource))
                     showAddDialog = false
                 }
             )
@@ -166,7 +168,7 @@ fun CatalogScreen(onClickCatalog: () -> Unit) {
 }
 
 @Composable
-fun CatalogGrid(padding: PaddingValues, recipes: List<RecipeItem>) {
+fun CatalogGrid(padding: PaddingValues, recipes: List<CatalogItem>) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         modifier = Modifier
@@ -184,7 +186,7 @@ fun CatalogGrid(padding: PaddingValues, recipes: List<RecipeItem>) {
 }
 
 @Composable
-fun CatalogCard(item: RecipeItem) {
+fun CatalogCard(item: CatalogItem) {
     val painter = when (val img = item.image) {
         is CatalogImage.Resource -> painterResource(img.res)
         is CatalogImage.Bitmap -> {

@@ -7,7 +7,7 @@ sealed class CatalogImage {
     data class Bitmap(val data: ByteArray) : CatalogImage()
 }
 
-data class RecipeItem(
+data class CatalogItem(
     val name: String,
     val image: CatalogImage
 )

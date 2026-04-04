@@ -1,6 +1,7 @@
 plugins {
     id("cooklog.android.library")
     id("cooklog.kmp.commoncompose")
+    id("cooklog.cmp.koin")
 }
 
 kotlin {
@@ -19,6 +20,7 @@ kotlin {
             projects.apply {
                 implementation(core.common)
                 implementation(core.ui)
+                implementation(core.database)
             }
         }
         commonTest.dependencies {
