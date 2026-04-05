@@ -78,8 +78,8 @@ fun CatalogScreen(onClickCatalog: () -> Unit) {
 
     val recipeList = remember { //todo we will get this from database
         mutableStateListOf(
-            CatalogItem("Pasta", CatalogImage.Resource(Res.drawable.default)),
-            CatalogItem("Pizza", CatalogImage.Resource(Res.drawable.default))
+            CatalogItem(name = "Pasta", image = CatalogImage.Resource(Res.drawable.default)),
+            CatalogItem(name = "Pizza", image = CatalogImage.Resource(Res.drawable.default))
         )
     }
     val filteredRecipes = recipeList.filter {
@@ -91,7 +91,7 @@ fun CatalogScreen(onClickCatalog: () -> Unit) {
             AddCatalogDialog(
                 onDismiss = { showAddDialog = false },
                 onConfirm = { name, imageSource ->
-                    recipeList.add(CatalogItem(name, imageSource))
+                    recipeList.add(CatalogItem(name = name, image = imageSource))
                     showAddDialog = false
                 }
             )

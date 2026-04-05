@@ -1,4 +1,4 @@
-package com.saharapps.catalog
+package com.saharapps.catalog.ui
 
 import androidx.lifecycle.ViewModel
 

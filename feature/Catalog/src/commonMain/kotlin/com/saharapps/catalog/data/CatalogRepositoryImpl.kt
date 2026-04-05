@@ -3,7 +3,7 @@ package com.saharapps.catalog.data
 import com.saharapps.database.catalog.CatalogDao
 import com.saharapps.database.catalog.CatalogEntity
 
-class CatalogRepositoryImpl(
+internal class CatalogRepositoryImpl(
     private val dao: CatalogDao
 ): CatalogRepository {
     override suspend fun getCatalogs(): Result<List<CatalogEntity>> {
