@@ -2,6 +2,7 @@ package com.saharapps.catalog.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.saharapps.catalog.CatalogItem
 import com.saharapps.catalog.domain.GetCatalogUseCase
 import com.saharapps.catalog.domain.SaveCatalogUseCase
 import com.saharapps.ui.ViewStatus
@@ -42,6 +43,9 @@ class CatalogViewModel(
         }
     }
 
-
-
+    fun saveCatalog(catalog: CatalogItem) {
+        viewModelScope.launch {
+            saveCatalogUseCase(catalog)
+        }
+    }
 }

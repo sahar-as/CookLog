@@ -5,5 +5,6 @@ import com.saharapps.ui.ViewStatus
 
 data class CatalogUiState(
     val catalogs: List<CatalogItem> = emptyList(),
-    val viewStatus: ViewStatus = ViewStatus.INITIAL
+    val viewStatus: ViewStatus = ViewStatus.INITIAL,
+    val failedMessage: String? = null
 )
