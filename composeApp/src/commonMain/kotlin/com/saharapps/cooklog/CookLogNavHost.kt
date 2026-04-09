@@ -18,7 +18,9 @@ fun CookLogNavHost(navController: NavHostController) {
         composable<Route.Catalog> {
             val catalogViewModel: CatalogViewModel = koinViewModel()
             CatalogScreen(
-                onClickCatalog = {},
+                onClickCatalog = { id ->
+                    println("TAG-sahar 4444 $id")
+                },
                 viewModel = catalogViewModel
             )
         }

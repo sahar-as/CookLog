@@ -3,6 +3,7 @@ package com.saharapps.catalog.ui
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -59,26 +60,27 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.saharapps.catalog.CatalogImage
 import com.saharapps.catalog.CatalogItem
-import com.saharapps.catalog.utils.Constant
 import com.saharapps.common.rememberImagePicker
 import com.saharapps.ui.ViewStatus
 import com.saharapps.ui.theme.LightColorScheme
 import cooklog.feature.catalog.generated.resources.Res
-import cooklog.feature.catalog.generated.resources.default
+import cooklog.feature.catalog.generated.resources.*
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.decodeToImageBitmap
-
+import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CatalogScreen(
     viewModel: CatalogViewModel,
-    onClickCatalog: () -> Unit
+    onClickCatalog: (Long) -> Unit
 ) {
     val catalogUiState by viewModel.catalogUiState.collectAsStateWithLifecycle()
     LaunchedEffect(Unit) {
         viewModel.getCatalogs()
     }
+
+    var catalogToDelete by remember { mutableStateOf<CatalogItem?>(null) }
 
     var isSearchExpanded by remember { mutableStateOf(false) }
     var searchQuery by remember { mutableStateOf("") }
@@ -101,6 +103,17 @@ fun CatalogScreen(
             )
         }
 
+        catalogToDelete?.let { catalog ->
+            DeleteDialog(
+                item = catalog,
+                onDismiss = { catalogToDelete = null },
+                onConfirm = { id ->
+                    id.let { viewModel.deleteCatalog(it) }
+                    catalogToDelete = null
+                }
+            )
+        }
+
         Scaffold(
             topBar = {
                 TopAppBar(
@@ -111,7 +124,7 @@ fun CatalogScreen(
                     ),
                     title = {
                         if (!isSearchExpanded) {
-                            Text(Constant.CATALOGS)
+                            Text(stringResource(Res.string.catalogs))
                         } else {
                             TextField(
                                 value = searchQuery,
@@ -119,7 +132,7 @@ fun CatalogScreen(
                                 modifier = Modifier.fillMaxWidth().focusRequester(focusRequester),
                                 placeholder = {
                                     Text(
-                                        Constant.SEARCH_HINT,
+                                        stringResource(Res.string.search),
                                         color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f)
                                     )
                                 },
@@ -158,7 +171,7 @@ fun CatalogScreen(
                 ) {
                     Icon(
                         Icons.Default.Add,
-                        contentDescription = Constant.ADD_ITEM
+                        contentDescription = stringResource(Res.string.add_item)
                     )
                 }
             }
@@ -168,12 +181,16 @@ fun CatalogScreen(
                 ViewStatus.LOADING -> {
                     //todo should show Shimmer
                 }
+
                 ViewStatus.SUCCESS -> {
                     CatalogGrid(
                         padding = innerPadding,
-                        recipes = filteredRecipes
+                        recipes = filteredRecipes,
+                        onClickCatalog = onClickCatalog,
+                        onLongClickCatalog = { item -> catalogToDelete = item }
                     )
                 }
+
                 ViewStatus.FAILED -> {
                     //todo should show failed screen
                 }
@@ -183,7 +200,12 @@ fun CatalogScreen(
 }
 
 @Composable
-fun CatalogGrid(padding: PaddingValues, recipes: List<CatalogItem>) {
+fun CatalogGrid(
+    padding: PaddingValues,
+    recipes: List<CatalogItem>,
+    onClickCatalog: (Long) -> Unit,
+    onLongClickCatalog: (CatalogItem) -> Unit
+) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         modifier = Modifier
@@ -195,13 +217,21 @@ fun CatalogGrid(padding: PaddingValues, recipes: List<CatalogItem>) {
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         items(recipes) { recipe ->
-            CatalogCard(item = recipe)
+            CatalogCard(
+                item = recipe,
+                onClickCatalog = onClickCatalog,
+                onLongClickCatalog = onLongClickCatalog
+            )
         }
     }
 }
 
 @Composable
-fun CatalogCard(item: CatalogItem) {
+fun CatalogCard(
+    item: CatalogItem,
+    onClickCatalog: (Long) -> Unit,
+    onLongClickCatalog: (CatalogItem) -> Unit
+) {
     val painter = when (val img = item.image) {
         is CatalogImage.Resource -> painterResource(img.res)
         is CatalogImage.Bitmap -> {
@@ -215,8 +245,12 @@ fun CatalogCard(item: CatalogItem) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .aspectRatio(1f), //To have square card
-        shape = RoundedCornerShape(12.dp)
+            .aspectRatio(1f) //To have square card
+            .combinedClickable(
+                onClick = { onClickCatalog(item.id) },
+                onLongClick = { onLongClickCatalog(item) }
+            ),
+        shape = RoundedCornerShape(12.dp),
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
             Image(
@@ -264,7 +298,7 @@ fun AddCatalogDialog(
         containerColor = MaterialTheme.colorScheme.primaryContainer,
         title = {
             Text(
-                Constant.CREATE_NEW_CATALOG,
+                stringResource(Res.string.create_new_entry),
                 color = MaterialTheme.colorScheme.primary
             )
         },
@@ -273,7 +307,7 @@ fun AddCatalogDialog(
                 OutlinedTextField(
                     value = name,
                     onValueChange = { name = it },
-                    label = { Text(Constant.NAME) },
+                    label = { Text(stringResource(Res.string.name)) },
                     modifier = Modifier.fillMaxWidth(),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = MaterialTheme.colorScheme.primary,
@@ -288,14 +322,14 @@ fun AddCatalogDialog(
                             containerColor = MaterialTheme.colorScheme.secondary
                         )
                     ) {
-                        Text(Constant.GALLERY, color = MaterialTheme.colorScheme.onSecondary)
+                        Text(stringResource(Res.string.gallery), color = MaterialTheme.colorScheme.onSecondary)
                     }
 
                     OutlinedButton(
                         onClick = { selectedImage = CatalogImage.Resource(Res.drawable.default) },
                         border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
                     ) {
-                        Text(Constant.DEFAULT, color = MaterialTheme.colorScheme.primary)
+                        Text(stringResource(Res.string.default), color = MaterialTheme.colorScheme.primary)
                     }
                 }
 
@@ -320,7 +354,7 @@ fun AddCatalogDialog(
                     }
 
                     null -> Text(
-                        Constant.NO_IMAGE_SELECTED,
+                        stringResource(Res.string.no_image_selected),
                         style = MaterialTheme.typography.bodySmall
                     )
                 }
@@ -333,12 +367,46 @@ fun AddCatalogDialog(
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.secondary
                 )
-            ) { Text(Constant.CREATE, color = MaterialTheme.colorScheme.onSecondary) }
+            ) { Text(stringResource(Res.string.create), color = MaterialTheme.colorScheme.onSecondary) }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
                 Text(
-                    Constant.CANCEL,
+                    stringResource(Res.string.cancel),
+                    color = MaterialTheme.colorScheme.onSecondary.copy(alpha = 0.6f)
+                )
+            }
+        }
+    )
+}
+
+@Composable
+fun DeleteDialog(
+    item: CatalogItem,
+    onDismiss: () -> Unit,
+    onConfirm: (Long) -> Unit,
+) {
+    AlertDialog(
+        containerColor = MaterialTheme.colorScheme.primaryContainer,
+        onDismissRequest = { },
+        title = { Text(stringResource(Res.string.delete_catalog)) },
+        text = { Text(stringResource(Res.string.delete_confirmation, item.name)) },
+        confirmButton = {
+            Button(
+                onClick = {
+                    onConfirm(item.id)
+                },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.secondary
+                )
+            ) {
+                Text(stringResource(Res.string.delete), color = Color.White)
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = { onDismiss() }) {
+                Text(
+                    stringResource(Res.string.cancel),
                     color = MaterialTheme.colorScheme.onSecondary.copy(alpha = 0.6f)
                 )
             }

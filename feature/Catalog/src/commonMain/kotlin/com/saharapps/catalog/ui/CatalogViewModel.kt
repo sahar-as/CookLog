@@ -49,4 +49,8 @@ class CatalogViewModel(
             getCatalogs()
         }
     }
+
+    fun deleteCatalog(id: Long){
+        println("TAG-sahar This shit should be deleted $id")
+    }
 }
