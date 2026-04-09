@@ -5,4 +5,5 @@ import com.saharapps.database.catalog.CatalogEntity
 interface CatalogRepository {
     suspend fun getCatalogs(): Result<List<CatalogEntity>>
     suspend fun saveCatalog(catalog: CatalogEntity)
+    suspend fun deleteCatalog(id: Long)
 }

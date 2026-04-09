@@ -3,6 +3,7 @@ package com.saharapps.catalog.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.saharapps.catalog.CatalogItem
+import com.saharapps.catalog.domain.DeleteCatalogUseCase
 import com.saharapps.catalog.domain.GetCatalogUseCase
 import com.saharapps.catalog.domain.SaveCatalogUseCase
 import com.saharapps.ui.ViewStatus
@@ -13,7 +14,8 @@ import kotlinx.coroutines.launch
 
 class CatalogViewModel(
     private val getCatalogUseCase: GetCatalogUseCase,
-    private val saveCatalogUseCase: SaveCatalogUseCase
+    private val saveCatalogUseCase: SaveCatalogUseCase,
+    private val deleteCatalogUseCase: DeleteCatalogUseCase
 ) : ViewModel() {
     private val _catalogUiState = MutableStateFlow(CatalogUiState())
     val catalogUiState = _catalogUiState.asStateFlow()
@@ -51,6 +53,9 @@ class CatalogViewModel(
     }
 
     fun deleteCatalog(id: Long){
-        println("TAG-sahar This shit should be deleted $id")
+        viewModelScope.launch {
+            deleteCatalogUseCase(id)
+            getCatalogs()
+        }
     }
 }

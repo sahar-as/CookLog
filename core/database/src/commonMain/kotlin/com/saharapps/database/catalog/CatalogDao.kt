@@ -11,4 +11,7 @@ interface CatalogDao {
 
     @Insert
     suspend fun insertCatalog(catalog: CatalogEntity)
+
+    @Query("DELETE FROM catalogs WHERE id = :catalogId")
+    suspend fun deleteById(catalogId: Long)
 }

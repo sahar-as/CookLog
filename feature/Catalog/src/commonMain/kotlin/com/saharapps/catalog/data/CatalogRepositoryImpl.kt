@@ -13,4 +13,8 @@ internal class CatalogRepositoryImpl(
     override suspend fun saveCatalog(catalog: CatalogEntity) {
         dao.insertCatalog(catalog)
     }
+
+    override suspend fun deleteCatalog(id: Long) {
+        dao.deleteById(id)
+    }
 }

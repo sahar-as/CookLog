@@ -2,6 +2,8 @@ package com.saharapps.catalog.di
 
 import com.saharapps.catalog.data.CatalogRepository
 import com.saharapps.catalog.data.CatalogRepositoryImpl
+import com.saharapps.catalog.domain.DeleteCatalogUseCase
+import com.saharapps.catalog.domain.DeleteCatalogUseCaseImpl
 import com.saharapps.catalog.domain.GetCatalogUseCase
 import com.saharapps.catalog.domain.GetCatalogUseCaseImpl
 import com.saharapps.catalog.domain.SaveCatalogUseCase
@@ -14,5 +16,12 @@ val catalogModule = module {
     factory<CatalogRepository> { CatalogRepositoryImpl(get()) }
     factory<GetCatalogUseCase> { GetCatalogUseCaseImpl(get()) }
     factory<SaveCatalogUseCase> { SaveCatalogUseCaseImpl(get()) }
-    viewModel { CatalogViewModel(get(), get()) }
+    factory<DeleteCatalogUseCase> { DeleteCatalogUseCaseImpl(get()) }
+    viewModel {
+        CatalogViewModel(
+            get(),
+            get(),
+            get()
+        )
+    }
 }
