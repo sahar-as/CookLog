@@ -11,8 +11,8 @@ import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
 val catalogModule = module {
-    single<CatalogRepository> { CatalogRepositoryImpl(get()) }
-    single<GetCatalogUseCase> { GetCatalogUseCaseImpl(get()) }
-    single<SaveCatalogUseCase> { SaveCatalogUseCaseImpl(get()) }
-    viewModel { CatalogViewModel() }
+    factory<CatalogRepository> { CatalogRepositoryImpl(get()) }
+    factory<GetCatalogUseCase> { GetCatalogUseCaseImpl(get()) }
+    factory<SaveCatalogUseCase> { SaveCatalogUseCaseImpl(get()) }
+    viewModel { CatalogViewModel(get(), get()) }
 }

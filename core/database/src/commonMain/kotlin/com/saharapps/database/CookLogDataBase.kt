@@ -1,7 +1,9 @@
 package com.saharapps.database
 
+import androidx.room.ConstructedBy
 import androidx.room.Database
 import androidx.room.RoomDatabase
+import androidx.room.RoomDatabaseConstructor
 import com.saharapps.database.catalog.CatalogDao
 import com.saharapps.database.catalog.CatalogEntity
 
@@ -9,14 +11,14 @@ import com.saharapps.database.catalog.CatalogEntity
     entities = [CatalogEntity::class],
     version = 1
 )
-abstract class AppDatabase : RoomDatabase() {
+@ConstructedBy(CookLogDatabaseConstructor::class)
+abstract class CookLogDatabase : RoomDatabase() {
     abstract fun catalogDao(): CatalogDao
 }
 
-expect fun getDatabaseBuilder(): RoomDatabase.Builder<AppDatabase>
-
-fun createDatabase(): AppDatabase {
-    return getDatabaseBuilder()
-        .fallbackToDestructiveMigration(dropAllTables = true)
-        .build()
+expect class DatabaseFactory {
+    fun create(): CookLogDatabase
 }
+
+@Suppress("NO_ACTUAL_FOR_EXPECT")
+expect object CookLogDatabaseConstructor : RoomDatabaseConstructor<CookLogDatabase>

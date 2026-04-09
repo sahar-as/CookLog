@@ -1,6 +1,7 @@
 plugins {
     id("cooklog.android.library")
     id("cooklog.kmp.room")
+    id("cooklog.cmp.koin")
 }
 
 kotlin {

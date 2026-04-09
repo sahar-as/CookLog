@@ -43,7 +43,6 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -57,10 +56,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.saharapps.catalog.CatalogImage
 import com.saharapps.catalog.CatalogItem
 import com.saharapps.catalog.utils.Constant
 import com.saharapps.common.rememberImagePicker
+import com.saharapps.ui.ViewStatus
 import com.saharapps.ui.theme.LightColorScheme
 import cooklog.feature.catalog.generated.resources.Res
 import cooklog.feature.catalog.generated.resources.default
@@ -70,19 +71,21 @@ import org.jetbrains.compose.resources.decodeToImageBitmap
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CatalogScreen(onClickCatalog: () -> Unit) {
+fun CatalogScreen(
+    viewModel: CatalogViewModel,
+    onClickCatalog: () -> Unit
+) {
+    val catalogUiState by viewModel.catalogUiState.collectAsStateWithLifecycle()
+    LaunchedEffect(Unit) {
+        viewModel.getCatalogs()
+    }
+
     var isSearchExpanded by remember { mutableStateOf(false) }
     var searchQuery by remember { mutableStateOf("") }
     val focusRequester = remember { FocusRequester() }
     var showAddDialog by remember { mutableStateOf(false) }
 
-    val recipeList = remember { //todo we will get this from database
-        mutableStateListOf(
-            CatalogItem(name = "Pasta", image = CatalogImage.Resource(Res.drawable.default)),
-            CatalogItem(name = "Pizza", image = CatalogImage.Resource(Res.drawable.default))
-        )
-    }
-    val filteredRecipes = recipeList.filter {
+    val filteredRecipes = catalogUiState.catalogs.filter {
         it.name.contains(searchQuery, ignoreCase = true)
     }
 
@@ -91,7 +94,8 @@ fun CatalogScreen(onClickCatalog: () -> Unit) {
             AddCatalogDialog(
                 onDismiss = { showAddDialog = false },
                 onConfirm = { name, imageSource ->
-                    recipeList.add(CatalogItem(name = name, image = imageSource))
+                    val newCatalog = CatalogItem(name = name, image = imageSource)
+                    viewModel.saveCatalog(newCatalog)
                     showAddDialog = false
                 }
             )
@@ -159,10 +163,21 @@ fun CatalogScreen(onClickCatalog: () -> Unit) {
                 }
             }
         ) { innerPadding ->
-            CatalogGrid(
-                padding = innerPadding,
-                recipes = filteredRecipes
-            )
+            when (catalogUiState.viewStatus) {
+                ViewStatus.INITIAL -> {}
+                ViewStatus.LOADING -> {
+                    //todo should show Shimmer
+                }
+                ViewStatus.SUCCESS -> {
+                    CatalogGrid(
+                        padding = innerPadding,
+                        recipes = filteredRecipes
+                    )
+                }
+                ViewStatus.FAILED -> {
+                    //todo should show failed screen
+                }
+            }
         }
     }
 }

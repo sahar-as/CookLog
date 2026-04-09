@@ -7,7 +7,7 @@ import androidx.room.Query
 @Dao
 interface CatalogDao {
     @Query("SELECT * FROM catalogs")
-    fun getAllCatalogs(): Result<List<CatalogEntity>>
+    suspend fun getAllCatalogs(): List<CatalogEntity>
 
     @Insert
     suspend fun insertCatalog(catalog: CatalogEntity)

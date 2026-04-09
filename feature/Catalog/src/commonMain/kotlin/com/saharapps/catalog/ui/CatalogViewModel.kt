@@ -46,6 +46,7 @@ class CatalogViewModel(
     fun saveCatalog(catalog: CatalogItem) {
         viewModelScope.launch {
             saveCatalogUseCase(catalog)
+            getCatalogs()
         }
     }
 }

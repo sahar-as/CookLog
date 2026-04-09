@@ -10,6 +10,7 @@ import org.koin.compose.KoinApplication
 @Preview
 fun App() {
     KoinApplication(application = {
+        printLogger()
         modules(appModule)
     }) {
         MaterialTheme {

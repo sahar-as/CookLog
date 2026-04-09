@@ -7,7 +7,7 @@ internal class CatalogRepositoryImpl(
     private val dao: CatalogDao
 ): CatalogRepository {
     override suspend fun getCatalogs(): Result<List<CatalogEntity>> {
-        return dao.getAllCatalogs()
+        return Result.success(dao.getAllCatalogs())
     }
 
     override suspend fun saveCatalog(catalog: CatalogEntity) {

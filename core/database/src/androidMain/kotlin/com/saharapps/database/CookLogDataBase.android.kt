@@ -1,14 +1,16 @@
 package com.saharapps.database
 
+import android.content.Context
 import androidx.room.Room
-import androidx.room.RoomDatabase
-import org.koin.mp.KoinPlatform
 
-actual fun getDatabaseBuilder(): RoomDatabase.Builder<AppDatabase> {
-    val context = KoinPlatform.getKoin().get<android.content.Context>()
-    return Room.databaseBuilder(
-        context,
-        AppDatabase::class.java,
-        "cooklog.db"
-    )
+actual class DatabaseFactory(
+    private val context: Context
+) {
+    actual fun create(): CookLogDatabase {
+        return Room.databaseBuilder(
+            context,
+            CookLogDatabase::class.java,
+            "cooklog.db"
+        ).build()
+    }
 }
