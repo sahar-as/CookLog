@@ -10,6 +10,7 @@ data class RecipeEntity(
     val name: String,
     val explanation: String,
     val image: ByteArray?,
+    val resourceIndex: Int?,
     val isFavorite: Boolean,
     val catalogId: Long,
 )
