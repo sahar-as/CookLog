@@ -1,19 +1,17 @@
 package com.saharapps.database.recipe
 
 import androidx.room.Dao
-import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.saharapps.database.catalog.CatalogEntity
 
 @Dao
 interface RecipeDao {
     @Query("SELECT * FROM recipe_table WHERE id = :recipeId")
-    suspend fun getRecipe(recipeId: Long)
+    suspend fun getRecipe(recipeId: Long): RecipeEntity
 
     @Query("SELECT * FROM recipe_table WHERE catalogId = :catalogId")
-    suspend fun getAllRecipeOfCatalog(catalogId: Long): List<CatalogEntity>
+    suspend fun getAllRecipeOfCatalog(catalogId: Long): List<RecipeEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertRecipe(recipe: RecipeEntity)

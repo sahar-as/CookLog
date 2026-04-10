@@ -6,14 +6,17 @@ import androidx.room.RoomDatabase
 import androidx.room.RoomDatabaseConstructor
 import com.saharapps.database.catalog.CatalogDao
 import com.saharapps.database.catalog.CatalogEntity
+import com.saharapps.database.recipe.RecipeDao
+import com.saharapps.database.recipe.RecipeEntity
 
 @Database(
-    entities = [CatalogEntity::class],
+    entities = [CatalogEntity::class, RecipeEntity::class],
     version = 1
 )
 @ConstructedBy(CookLogDatabaseConstructor::class)
 abstract class CookLogDatabase : RoomDatabase() {
     abstract fun catalogDao(): CatalogDao
+    abstract fun recipeDao(): RecipeDao
 }
 
 expect class DatabaseFactory {

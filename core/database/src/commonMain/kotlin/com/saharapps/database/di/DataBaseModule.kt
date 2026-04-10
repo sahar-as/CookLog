@@ -13,4 +13,7 @@ val databaseModule = module {
     single {
         get<CookLogDatabase>().catalogDao()
     }
+    single {
+        get<CookLogDatabase>().recipeDao()
+    }
 }
