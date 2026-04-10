@@ -23,7 +23,7 @@ class CatalogViewModel(
     fun getCatalogs() {
         viewModelScope.launch {
             _catalogUiState.update {
-                it.copy(viewStatus = ViewStatus.SUCCESS)
+                it.copy(viewStatus = ViewStatus.LOADING)
             }
             val result = getCatalogUseCase.invoke()
             result.onSuccess { catalogs ->
