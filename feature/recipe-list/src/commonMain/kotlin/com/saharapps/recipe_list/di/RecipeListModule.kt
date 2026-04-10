@@ -6,6 +6,8 @@ import com.saharapps.recipe_list.domain.DeleteRecipeUseCase
 import com.saharapps.recipe_list.domain.DeleteRecipeUseCaseImpl
 import com.saharapps.recipe_list.domain.GetRecipesByCatalogUseCase
 import com.saharapps.recipe_list.domain.GetRecipesByCatalogUseCaseImpl
+import com.saharapps.recipe_list.domain.UpdateFavoriteStatusUseCase
+import com.saharapps.recipe_list.domain.UpdateFavoriteStatusUseCaseImpl
 import com.saharapps.recipe_list.ui.RecipeListViewModel
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
@@ -14,5 +16,6 @@ val recipeListModule = module {
     factory<RecipeListRepository> { RecipeListRepositoryImpl(get()) }
     factory<GetRecipesByCatalogUseCase> { GetRecipesByCatalogUseCaseImpl(get()) }
     factory<DeleteRecipeUseCase> { DeleteRecipeUseCaseImpl(get()) }
+    factory<UpdateFavoriteStatusUseCase> { UpdateFavoriteStatusUseCaseImpl(get()) }
     viewModel { RecipeListViewModel() }
 }

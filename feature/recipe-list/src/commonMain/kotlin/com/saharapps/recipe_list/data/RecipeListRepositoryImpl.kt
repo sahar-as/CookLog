@@ -13,4 +13,14 @@ internal class RecipeListRepositoryImpl(
     override suspend fun deleteRecipe(recipeId: Long) {
         recipeDao.deleteRecipesById(recipeId)
     }
+
+    override suspend fun updateFavoriteStatus(
+        recipeId: Long,
+        isFavorite: Boolean
+    ) {
+        recipeDao.updateFavoriteStatus(
+            recipeId = recipeId,
+            isFavorite = isFavorite
+        )
+    }
 }
