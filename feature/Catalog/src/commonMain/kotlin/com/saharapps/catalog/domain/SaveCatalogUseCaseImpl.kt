@@ -1,8 +1,8 @@
 package com.saharapps.catalog.domain
 
-import com.saharapps.catalog.CatalogImage
 import com.saharapps.catalog.CatalogItem
 import com.saharapps.catalog.data.CatalogRepository
+import com.saharapps.common.model.CookLogImage
 import com.saharapps.database.catalog.CatalogEntity
 
 internal class SaveCatalogUseCaseImpl(
@@ -15,8 +15,8 @@ internal class SaveCatalogUseCaseImpl(
 
     private fun CatalogItem.toCatalogEntity(): CatalogEntity {
         val image = this.image
-        val imageData = if (image is CatalogImage.Bitmap) image.data else null
-        val isResource = image is CatalogImage.Resource
+        val imageData = if (image is CookLogImage.Bitmap) image.data else null
+        val isResource = image is CookLogImage.Resource
 
         return CatalogEntity(
             id = this.id,

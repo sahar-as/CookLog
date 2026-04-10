@@ -58,8 +58,8 @@ import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.saharapps.catalog.CatalogImage
 import com.saharapps.catalog.CatalogItem
+import com.saharapps.common.model.CookLogImage
 import com.saharapps.common.rememberImagePicker
 import com.saharapps.ui.ViewStatus
 import com.saharapps.ui.theme.LightColorScheme
@@ -233,8 +233,8 @@ fun CatalogCard(
     onLongClickCatalog: (CatalogItem) -> Unit
 ) {
     val painter = when (val img = item.image) {
-        is CatalogImage.Resource -> painterResource(img.res)
-        is CatalogImage.Bitmap -> {
+        is CookLogImage.Resource -> painterResource(img.res)
+        is CookLogImage.Bitmap -> {
             val bitmap = remember(img.data) {
                 img.data.decodeToImageBitmap()
             }
@@ -282,14 +282,14 @@ fun CatalogCard(
 @Composable
 fun AddCatalogDialog(
     onDismiss: () -> Unit,
-    onConfirm: (String, CatalogImage) -> Unit
+    onConfirm: (String, CookLogImage) -> Unit
 ) {
     var name by remember { mutableStateOf("") }
-    var selectedImage by remember { mutableStateOf<CatalogImage?>(null) }
+    var selectedImage by remember { mutableStateOf<CookLogImage?>(null) }
 
     val picker = rememberImagePicker { bytes ->
         if (bytes != null) {
-            selectedImage = CatalogImage.Bitmap(bytes)
+            selectedImage = CookLogImage.Bitmap(bytes)
         }
     }
 
@@ -326,7 +326,7 @@ fun AddCatalogDialog(
                     }
 
                     OutlinedButton(
-                        onClick = { selectedImage = CatalogImage.Resource(Res.drawable.default) },
+                        onClick = { selectedImage = CookLogImage.Resource(Res.drawable.default) },
                         border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
                     ) {
                         Text(stringResource(Res.string.default), color = MaterialTheme.colorScheme.primary)
@@ -334,7 +334,7 @@ fun AddCatalogDialog(
                 }
 
                 when (val image = selectedImage) {
-                    is CatalogImage.Bitmap -> {
+                    is CookLogImage.Bitmap -> {
                         val bitmap = remember(image.data) { image.data.decodeToImageBitmap() }
                         Image(
                             bitmap = bitmap,
@@ -344,7 +344,7 @@ fun AddCatalogDialog(
                         )
                     }
 
-                    is CatalogImage.Resource -> {
+                    is CookLogImage.Resource -> {
                         Image(
                             painter = painterResource(image.res),
                             contentDescription = null,

@@ -1,8 +1,8 @@
 package com.saharapps.catalog.domain
 
-import com.saharapps.catalog.CatalogImage
 import com.saharapps.catalog.CatalogItem
 import com.saharapps.catalog.data.CatalogRepository
+import com.saharapps.common.model.CookLogImage
 import com.saharapps.database.catalog.CatalogEntity
 import cooklog.feature.catalog.generated.resources.Res
 import cooklog.feature.catalog.generated.resources.default
@@ -25,9 +25,9 @@ internal class GetCatalogUseCaseImpl(
     private fun List<CatalogEntity>.toCatalogItems(): List<CatalogItem> {
         val catalogItems = this.map { entity ->
             val image = if (entity.isResource) {
-                CatalogImage.Resource(Res.drawable.default)
+                CookLogImage.Resource(Res.drawable.default)
             } else {
-                CatalogImage.Bitmap(entity.imageData ?: byteArrayOf())
+                CookLogImage.Bitmap(entity.imageData ?: byteArrayOf())
             }
             CatalogItem(
                 id = entity.id,

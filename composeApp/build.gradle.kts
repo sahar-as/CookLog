@@ -25,6 +25,7 @@ kotlin {
                 implementation(core.database)
                 implementation(feature.catalog)
                 implementation(feature.recipe)
+                implementation(feature.recipeList)
             }
         }
         commonTest.dependencies {
