@@ -9,7 +9,7 @@ import cooklog.feature.recipe_list.generated.resources.Res
 import cooklog.feature.recipe_list.generated.resources.default
 import kotlin.ranges.contains
 
-class GetRecipesByCatalogUseCaseImpl(
+internal class GetRecipesByCatalogUseCaseImpl(
     private val recipeListRepository: RecipeListRepository
 ) : GetRecipesByCatalogUseCase {
     override suspend fun invoke(catalogId: Long): Result<List<RecipeItem>> {

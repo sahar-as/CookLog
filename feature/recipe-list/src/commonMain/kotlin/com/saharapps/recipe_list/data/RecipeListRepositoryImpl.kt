@@ -9,4 +9,8 @@ internal class RecipeListRepositoryImpl(
     override suspend fun getRecipesByCatalog(catalogId: Long): Result<List<RecipeEntity>> {
         return Result.success(recipeDao.getRecipesByCatalog(catalogId))
     }
+
+    override suspend fun deleteRecipe(recipeId: Long) {
+        recipeDao.deleteRecipesById(recipeId)
+    }
 }
