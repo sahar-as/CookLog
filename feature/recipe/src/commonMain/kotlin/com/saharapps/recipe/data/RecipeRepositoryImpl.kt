@@ -9,4 +9,8 @@ internal class RecipeRepositoryImpl(
     override suspend fun getRecipeById(id: Long): Result<RecipeEntity> {
         return Result.success(recipeDao.getRecipe(id))
     }
+
+    override suspend fun saveRecipe(recipeEntity: RecipeEntity) {
+        recipeDao.insertRecipe(recipeEntity)
+    }
 }
