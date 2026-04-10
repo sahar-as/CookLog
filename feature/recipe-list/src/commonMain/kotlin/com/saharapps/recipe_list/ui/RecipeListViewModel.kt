@@ -2,7 +2,9 @@ package com.saharapps.recipe_list.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.saharapps.recipe_list.domain.DeleteRecipeUseCase
 import com.saharapps.recipe_list.domain.GetRecipesByCatalogUseCase
+import com.saharapps.recipe_list.domain.UpdateFavoriteStatusUseCase
 import com.saharapps.ui.ViewStatus
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -11,6 +13,8 @@ import kotlinx.coroutines.launch
 
 class RecipeListViewModel(
     private val getRecipesByCatalogUseCase: GetRecipesByCatalogUseCase,
+    private val deleteRecipeUseCase: DeleteRecipeUseCase,
+    private val updateFavoriteStatusUseCase: UpdateFavoriteStatusUseCase
 ) : ViewModel() {
     private val _recipeListUiState = MutableStateFlow(RecipeListUiState())
     val recipeListUiState = _recipeListUiState.asStateFlow()
@@ -37,6 +41,24 @@ class RecipeListViewModel(
                     )
                 }
             }
+        }
+    }
+
+    fun deleteRecipe(recipeId: Long){
+        viewModelScope.launch {
+            deleteRecipeUseCase(recipeId)
+        }
+    }
+
+    fun updateFavoriteState(
+        recipeId: Long,
+        isFavorite: Boolean
+    ){
+        viewModelScope.launch {
+            updateFavoriteStatusUseCase(
+                recipeId = recipeId,
+                isFavorite = isFavorite
+            )
         }
     }
 }
