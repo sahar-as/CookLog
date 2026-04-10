@@ -8,5 +8,5 @@ data class RecipeItem(
     val explanation: String,
     val image: CookLogImage,
     val isFavorite: Boolean = false,
-    val catalog: Long,
+    val catalogId: Long,
 )
