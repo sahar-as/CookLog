@@ -1,7 +1,8 @@
-package com.saharapps.recipe_list.domain.model
+package com.saharapps.common.model
 
-import cooklog.feature.recipe_list.generated.resources.Res
-import cooklog.feature.recipe_list.generated.resources.default
+import cooklog.core.common.generated.resources.Res
+import cooklog.core.common.generated.resources.default
+
 
 object RecipeDefaults {
     val list = listOf(

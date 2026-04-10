@@ -23,6 +23,7 @@ kotlin {
             projects.apply {
                 implementation(core.navigation)
                 implementation(core.database)
+                implementation(core.common)
                 implementation(feature.catalog)
                 implementation(feature.recipe)
                 implementation(feature.recipeList)

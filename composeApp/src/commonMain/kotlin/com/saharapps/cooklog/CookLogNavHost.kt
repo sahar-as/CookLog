@@ -8,6 +8,7 @@ import androidx.navigation.toRoute
 import com.saharapps.catalog.ui.CatalogScreen
 import com.saharapps.catalog.ui.CatalogViewModel
 import com.saharapps.navigation.Route
+import com.saharapps.recipe.ui.RecipeEditScreen
 import com.saharapps.recipe_list.ui.RecipeListScreen
 import com.saharapps.recipe_list.ui.RecipeListViewModel
 import org.koin.compose.viewmodel.koinViewModel
@@ -21,8 +22,8 @@ fun CookLogNavHost(navController: NavHostController) {
         composable<Route.Catalog> {
             val catalogViewModel: CatalogViewModel = koinViewModel()
             CatalogScreen(
-                onClickCatalog = { id ->
-                    navController.navigate(Route.RecipeList(id))
+                onClickCatalog = { catalogId ->
+                    navController.navigate(Route.RecipeList(catalogId))
                 },
                 viewModel = catalogViewModel
             )
@@ -34,8 +35,22 @@ fun CookLogNavHost(navController: NavHostController) {
                 catalogId = args.catalogId,
                 viewModel = recipeListViewModel,
                 onRecipeClick = {},
-                onBack = {}
+                onBack = {},
+                onClickAddRecipe = { catalogId, recipeId ->
+                    navController.navigate(Route.RecipeEdit(catalogId, recipeId))
+                }
             )
+        }
+        composable<Route.RecipeEdit> { backStackEntry ->
+            val args = backStackEntry.toRoute<Route.RecipeEdit>()
+            RecipeEditScreen(
+                catalogId = args.catalogId,
+                recipeId = args.recipeId,
+                onSave = { name, explanation, image -> },
+                onCancel = {}
+            )
+        }
+        composable<Route.RecipeDetail> { backStackEntry ->
         }
     }
 }

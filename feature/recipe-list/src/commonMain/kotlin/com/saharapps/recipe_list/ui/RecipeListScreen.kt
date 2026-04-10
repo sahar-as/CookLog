@@ -54,11 +54,11 @@ import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.saharapps.common.model.CookLogImage
-import com.saharapps.recipe_list.domain.model.RecipeItem
+import com.saharapps.common.model.RecipeItem
 import com.saharapps.ui.theme.LightColorScheme
 import cooklog.feature.recipe_list.generated.resources.Res
-import cooklog.feature.recipe_list.generated.resources.default
 import cooklog.feature.recipe_list.generated.resources.recipes
 import cooklog.feature.recipe_list.generated.resources.search
 import org.jetbrains.compose.resources.painterResource
@@ -70,32 +70,20 @@ fun RecipeListScreen(
     catalogId: Long,
     viewModel: RecipeListViewModel,
     onRecipeClick: (Long) -> Unit,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    onClickAddRecipe: (Long, Long?) -> Unit
 ) {
-//    val uiState by viewModel.recipeUiState.collectAsStateWithLifecycle()
+    val uiState by viewModel.recipeListUiState.collectAsStateWithLifecycle()
 
     var isSearchExpanded by remember { mutableStateOf(false) }
     var searchQuery by remember { mutableStateOf("") }
     val focusRequester = remember { FocusRequester() }
-    var showAddDialog by remember { mutableStateOf(false) }
 
-//    val filteredRecipes = uiState.recipes.filter {
-//        it.name.contains(searchQuery, ignoreCase = true)
-//    }
-
-    val filteredRecipes = listOf<RecipeItem>(
-        RecipeItem(id = 1, name = "Food", explanation = "This is explenation",
-            image = CookLogImage.Resource(Res.drawable.default), true, 1),
-        RecipeItem(id = 2, name = "Foodiiii", explanation = "This is explenation",
-            image = CookLogImage.Resource(Res.drawable.default), false, 1)
-    )
+    val filteredRecipes = uiState.recipes.filter {
+        it.name.contains(searchQuery, ignoreCase = true)
+    }
 
     MaterialTheme(colorScheme = LightColorScheme) {
-        // reuse your Add logic here if needed, or create AddRecipeDialog
-        if (showAddDialog) {
-            // AddRecipeDialog(...)
-        }
-
         Scaffold(
             topBar = {
                 TopAppBar(
@@ -152,7 +140,7 @@ fun RecipeListScreen(
             },
             floatingActionButton = {
                 FloatingActionButton(
-                    onClick = { showAddDialog = true },
+                    onClick = { onClickAddRecipe(catalogId, null) },
                     containerColor = MaterialTheme.colorScheme.secondary,
                     contentColor = MaterialTheme.colorScheme.onSecondary
                 ) {
@@ -168,19 +156,15 @@ fun RecipeListScreen(
                 contentPadding = PaddingValues(16.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-//                items(filteredRecipes) { recipe ->
-//                    RecipeHorizontalCard(
-//                        item = recipe,
-//                        onClick = { onRecipeClick(recipe.id) },
-//                        onFavoriteToggle = { viewModel.toggleFavorite(recipe.id) }
-//                    )
-//                }
                 items(filteredRecipes) { recipe ->
                     RecipeHorizontalCard(
                         item = recipe,
                         onClick = { onRecipeClick(recipe.id) },
-                        onFavoriteToggle = {
-//                            viewModel.toggleFavorite(recipe.id)
+                        onFavoriteToggle = { isFavorite ->
+                            viewModel.updateFavoriteState(
+                                recipeId = recipe.id,
+                                isFavorite = isFavorite
+                            )
                         }
                     )
                 }
@@ -193,7 +177,7 @@ fun RecipeListScreen(
 fun RecipeHorizontalCard(
     item: RecipeItem,
     onClick: () -> Unit,
-    onFavoriteToggle: () -> Unit
+    onFavoriteToggle: (Boolean) -> Unit
 ) {
     val painter = when (val img = item.image) {
         is CookLogImage.Resource -> painterResource(img.res)
@@ -234,12 +218,13 @@ fun RecipeHorizontalCard(
                 )
             }
 
-            // 2. Heart Button (Between Image and Text)
             Box(
                 modifier = Modifier.fillMaxHeight().padding(horizontal = 4.dp),
                 contentAlignment = Alignment.Center
             ) {
-                IconButton(onClick = onFavoriteToggle) {
+                IconButton(
+                    onClick = { onFavoriteToggle(item.isFavorite) }
+                ) {
                     Icon(
                         imageVector = if (item.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
                         contentDescription = null,
@@ -248,7 +233,6 @@ fun RecipeHorizontalCard(
                 }
             }
 
-            // 3. Name and Explanation
             Column(
                 modifier = Modifier
                     .fillMaxSize()

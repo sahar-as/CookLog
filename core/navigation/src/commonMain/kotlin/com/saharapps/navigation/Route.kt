@@ -6,5 +6,9 @@ import kotlinx.serialization.Serializable
 sealed class Route {
     @Serializable data object Catalog: Route()
     @Serializable data class RecipeList(val catalogId: Long): Route()
-    @Serializable data object Recipe: Route()
+    @Serializable data class RecipeDetail(val id: Long): Route()
+    @Serializable data class RecipeEdit(
+        val catalogId: Long,
+        val recipeId: Long?
+    ): Route()
 }

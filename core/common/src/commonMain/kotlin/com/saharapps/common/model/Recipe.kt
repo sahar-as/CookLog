@@ -1,6 +1,4 @@
-package com.saharapps.recipe_list.domain.model
-
-import com.saharapps.common.model.CookLogImage
+package com.saharapps.common.model
 
 data class RecipeItem(
     val id: Long = 0,

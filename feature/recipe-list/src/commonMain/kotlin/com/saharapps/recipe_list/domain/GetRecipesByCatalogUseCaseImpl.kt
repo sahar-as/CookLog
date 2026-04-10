@@ -1,10 +1,10 @@
 package com.saharapps.recipe_list.domain
 
 import com.saharapps.common.model.CookLogImage
+import com.saharapps.common.model.RecipeItem
 import com.saharapps.database.recipe.RecipeEntity
 import com.saharapps.recipe_list.data.RecipeListRepository
-import com.saharapps.recipe_list.domain.model.RecipeDefaults
-import com.saharapps.recipe_list.domain.model.RecipeItem
+import com.saharapps.common.model.RecipeDefaults
 import cooklog.feature.recipe_list.generated.resources.Res
 import cooklog.feature.recipe_list.generated.resources.default
 import kotlin.ranges.contains

@@ -17,5 +17,11 @@ val recipeListModule = module {
     factory<GetRecipesByCatalogUseCase> { GetRecipesByCatalogUseCaseImpl(get()) }
     factory<DeleteRecipeUseCase> { DeleteRecipeUseCaseImpl(get()) }
     factory<UpdateFavoriteStatusUseCase> { UpdateFavoriteStatusUseCaseImpl(get()) }
-    viewModel { RecipeListViewModel() }
+    viewModel {
+        RecipeListViewModel(
+            get(),
+            get(),
+            get()
+        )
+    }
 }
