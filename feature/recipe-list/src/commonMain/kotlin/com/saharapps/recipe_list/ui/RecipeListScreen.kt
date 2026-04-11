@@ -74,6 +74,9 @@ fun RecipeListScreen(
     onClickAddRecipe: (Long, Long?) -> Unit
 ) {
     val uiState by viewModel.recipeListUiState.collectAsStateWithLifecycle()
+    LaunchedEffect(Unit) {
+        viewModel.getRecipesByCatalog(catalogId)
+    }
 
     var isSearchExpanded by remember { mutableStateOf(false) }
     var searchQuery by remember { mutableStateOf("") }
