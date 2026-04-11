@@ -9,6 +9,7 @@ import com.saharapps.catalog.ui.CatalogScreen
 import com.saharapps.catalog.ui.CatalogViewModel
 import com.saharapps.navigation.Route
 import com.saharapps.recipe.ui.RecipeEditScreen
+import com.saharapps.recipe.ui.RecipeEditViewModel
 import com.saharapps.recipe_list.ui.RecipeListScreen
 import com.saharapps.recipe_list.ui.RecipeListViewModel
 import org.koin.compose.viewmodel.koinViewModel
@@ -43,9 +44,11 @@ fun CookLogNavHost(navController: NavHostController) {
         }
         composable<Route.RecipeEdit> { backStackEntry ->
             val args = backStackEntry.toRoute<Route.RecipeEdit>()
+            val recipeEditViewModel: RecipeEditViewModel = koinViewModel()
             RecipeEditScreen(
                 catalogId = args.catalogId,
                 recipeId = args.recipeId,
+                viewModel = recipeEditViewModel,
                 onSave = { name, explanation, image -> },
                 onCancel = {}
             )

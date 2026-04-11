@@ -32,6 +32,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,11 +42,20 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.saharapps.common.model.CookLogImage
 import com.saharapps.common.model.RecipeDefaults
+import com.saharapps.common.model.RecipeItem
 import com.saharapps.ui.theme.LightColorScheme
 import cooklog.feature.recipe.generated.resources.Res
+import cooklog.feature.recipe.generated.resources.choose_default_image
+import cooklog.feature.recipe.generated.resources.close
 import cooklog.feature.recipe.generated.resources.create
+import cooklog.feature.recipe.generated.resources.create_new_entry
+import cooklog.feature.recipe.generated.resources.default
+import cooklog.feature.recipe.generated.resources.edit_recipe
+import cooklog.feature.recipe.generated.resources.name
+import cooklog.feature.recipe.generated.resources.recipe
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -54,25 +64,56 @@ import org.jetbrains.compose.resources.stringResource
 fun RecipeEditScreen(
     catalogId: Long,
     recipeId: Long?,
+    viewModel: RecipeEditViewModel,
     onSave: (String, String, CookLogImage) -> Unit,
     onCancel: () -> Unit
 ) {
+    val uiState by viewModel.recipeUiState.collectAsStateWithLifecycle()
+
     var name by remember { mutableStateOf("") }
     var explanation by remember { mutableStateOf("") }
     var selectedImage by remember { mutableStateOf<CookLogImage?>(null) }
+    var isFavorite by remember { mutableStateOf(false) }
+
+    LaunchedEffect(recipeId) {
+        if (recipeId != null && recipeId != 0L) {
+            viewModel.getRecipeById(recipeId)
+        }
+    }
+
+    LaunchedEffect(uiState.recipe) {
+        uiState.recipe?.let { recipe ->
+            name = recipe.name
+            explanation = recipe.explanation
+            selectedImage = recipe.image
+            isFavorite = recipe.isFavorite
+        }
+    }
 
     MaterialTheme(colorScheme = LightColorScheme) {
         Scaffold(
             topBar = {
                 TopAppBar(
-                    title = { Text("stringResource(Res.string.create_new_entry)") },
+                    title = {
+                        Text(
+                            if (recipeId == null)
+                                stringResource(Res.string.create_new_entry)
+                            else
+                                stringResource(Res.string.edit_recipe)
+                        )
+                    },
                     colors = TopAppBarDefaults.topAppBarColors(
                         containerColor = MaterialTheme.colorScheme.primary,
                         titleContentColor = MaterialTheme.colorScheme.onPrimary,
                         navigationIconContentColor = MaterialTheme.colorScheme.onPrimary
                     ),
                     navigationIcon = {
-                        IconButton(onClick = onCancel) { Icon(Icons.Default.Close, null) }
+                        IconButton(onClick = onCancel) {
+                            Icon(
+                                Icons.Default.Close,
+                                stringResource(Res.string.close)
+                            )
+                        }
                     }
                 )
             }
@@ -81,7 +122,7 @@ fun RecipeEditScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(padding)
-                    .background(MaterialTheme.colorScheme.primaryContainer) // Use primaryContainer for background
+                    .background(MaterialTheme.colorScheme.primaryContainer)
                     .padding(16.dp)
                     .verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
@@ -89,7 +130,7 @@ fun RecipeEditScreen(
                 OutlinedTextField(
                     value = name,
                     onValueChange = { name = it },
-                    label = { Text("stringResource(Res.string.name)") },
+                    label = { Text(stringResource(Res.string.name)) },
                     modifier = Modifier.fillMaxWidth(),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = MaterialTheme.colorScheme.primary,
@@ -98,7 +139,7 @@ fun RecipeEditScreen(
                 )
 
                 Text(
-                    "Choose a Default Image",
+                    stringResource(Res.string.choose_default_image),
                     style = MaterialTheme.typography.titleSmall,
                     color = MaterialTheme.colorScheme.primary
                 )
@@ -117,7 +158,11 @@ fun RecipeEditScreen(
                                 )
                                 .clickable { selectedImage = CookLogImage.Resource(res) }
                         ) {
-                            Image(painterResource(res), null, contentScale = ContentScale.Crop)
+                            Image(
+                                painterResource(res),
+                                null,
+                                contentScale = ContentScale.Crop
+                            )
                         }
                     }
                 }
@@ -125,7 +170,7 @@ fun RecipeEditScreen(
                 OutlinedTextField(
                     value = explanation,
                     onValueChange = { explanation = it },
-                    label = { Text("stringResource(Res.string.explanation)") },
+                    label = { Text(stringResource(Res.string.recipe)) },
                     modifier = Modifier.fillMaxWidth().height(150.dp),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = MaterialTheme.colorScheme.primary,
@@ -134,7 +179,18 @@ fun RecipeEditScreen(
                 )
 
                 Button(
-                    onClick = { /* Save Logic */ },
+                    onClick = {
+                        val recipeToSave = RecipeItem(
+                            id = recipeId ?: 0L,
+                            name = name,
+                            explanation = explanation,
+                            image = selectedImage ?: CookLogImage.Resource(Res.drawable.default),
+                            isFavorite = isFavorite,
+                            catalogId = catalogId
+                        )
+                        viewModel.saveRecipe(recipeToSave)
+                        onCancel()
+                    },
                     modifier = Modifier.fillMaxWidth().height(56.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
                     shape = RoundedCornerShape(12.dp)

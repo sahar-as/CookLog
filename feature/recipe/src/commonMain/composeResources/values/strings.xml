@@ -1,15 +1,17 @@
 <resources>
     <string name="delete_recipe">Delete Recipe</string>
-    <string name="delete_confirmation">Are you sure you want to delete %1$s?</string>
     <string name="cancel">Cancel</string>
     <string name="delete">Delete</string>
-    <string name="create">Create</string>
     <string name="gallery">Gallery</string>
     <string name="default">Default</string>
     <string name="name">Name</string>
     <string name="search">Search...</string>
     <string name="add_item">Add Item</string>
-    <string name="recipes">Recipes</string>
-    <string name="create_new_entry">Create New Entry</string>
+    <string name="recipe">Recipe</string>
+    <string name="create">Create</string>
+    <string name="create_new_entry">Create New Recipe</string>
+    <string name="edit_recipe">Edit Recipe</string>
     <string name="no_image_selected">No image selected!</string>
+    <string name="close">Close</string>
+    <string name="choose_default_image">Choose a Default Image</string>
 </resources>
