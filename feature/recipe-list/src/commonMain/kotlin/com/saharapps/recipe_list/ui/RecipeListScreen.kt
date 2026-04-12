@@ -162,7 +162,9 @@ fun RecipeListScreen(
                 items(filteredRecipes) { recipe ->
                     RecipeHorizontalCard(
                         item = recipe,
-                        onClick = { onRecipeClick(recipe.id) },
+                        onClick = { recipeId ->
+                            onRecipeClick(recipeId)
+                        },
                         onFavoriteToggle = { isFavorite ->
                             viewModel.updateFavoriteState(
                                 recipeId = recipe.id,
@@ -179,7 +181,7 @@ fun RecipeListScreen(
 @Composable
 fun RecipeHorizontalCard(
     item: RecipeItem,
-    onClick: () -> Unit,
+    onClick: (Long) -> Unit,
     onFavoriteToggle: (Boolean) -> Unit
 ) {
     val painter = when (val img = item.image) {
@@ -195,11 +197,10 @@ fun RecipeHorizontalCard(
             .fillMaxWidth()
             .height(120.dp),
         shape = RoundedCornerShape(12.dp),
-        onClick = onClick,
+        onClick = { onClick(item.id) },
         colors = CardDefaults.cardColors(containerColor = Color.White)
     ) {
         Row(modifier = Modifier.fillMaxSize()) {
-            // 1. Image
             Box(modifier = Modifier.width(120.dp).fillMaxHeight()) {
                 Image(
                     painter = painter,

@@ -5,4 +5,8 @@ import com.saharapps.database.recipe.RecipeEntity
 interface RecipeRepository {
     suspend fun getRecipeById(id: Long): Result<RecipeEntity>
     suspend fun saveRecipe(recipeEntity: RecipeEntity)
+    suspend fun updateFavoriteStatus(
+        recipeId: Long,
+        isFavorite: Boolean
+    )
 }

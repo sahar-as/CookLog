@@ -8,6 +8,8 @@ import androidx.navigation.toRoute
 import com.saharapps.catalog.ui.CatalogScreen
 import com.saharapps.catalog.ui.CatalogViewModel
 import com.saharapps.navigation.Route
+import com.saharapps.recipe.ui.RecipeDetailScreen
+import com.saharapps.recipe.ui.RecipeDetailViewModel
 import com.saharapps.recipe.ui.RecipeEditScreen
 import com.saharapps.recipe.ui.RecipeEditViewModel
 import com.saharapps.recipe_list.ui.RecipeListScreen
@@ -35,7 +37,9 @@ fun CookLogNavHost(navController: NavHostController) {
             RecipeListScreen(
                 catalogId = args.catalogId,
                 viewModel = recipeListViewModel,
-                onRecipeClick = {},
+                onRecipeClick = { recipeId ->
+                    navController.navigate(Route.RecipeDetail(recipeId))
+                },
                 onBack = {},
                 onClickAddRecipe = { catalogId, recipeId ->
                     navController.navigate(Route.RecipeEdit(catalogId, recipeId))
@@ -53,7 +57,17 @@ fun CookLogNavHost(navController: NavHostController) {
                 onCancel = {}
             )
         }
+
         composable<Route.RecipeDetail> { backStackEntry ->
+            val args = backStackEntry.toRoute<Route.RecipeDetail>()
+            val recipeDetailViewModel: RecipeDetailViewModel = koinViewModel()
+            RecipeDetailScreen(
+                recipeId = args.recipeId,
+                viewModel = recipeDetailViewModel,
+                onBack = {},
+                onDelete = {},
+                onEdit = {},
+            )
         }
     }
 }

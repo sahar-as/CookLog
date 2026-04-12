@@ -13,4 +13,13 @@ internal class RecipeRepositoryImpl(
     override suspend fun saveRecipe(recipeEntity: RecipeEntity) {
         recipeDao.insertRecipe(recipeEntity)
     }
+    override suspend fun updateFavoriteStatus(
+        recipeId: Long,
+        isFavorite: Boolean
+    ) {
+        recipeDao.updateFavoriteStatus(
+            recipeId = recipeId,
+            isFavorite = isFavorite
+        )
+    }
 }
