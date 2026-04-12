@@ -81,17 +81,18 @@ fun RecipeDetailScreen(
                         }
                         IconButton(
                             onClick = {
-                                val currentFavoriteStatus = uiState.recipe?.isFavorite ?: false
+                                val currentStatus = uiState.recipe?.isFavorite ?: false
                                 viewModel.updateFavoriteState(
                                     recipeId = recipeId,
-                                    isFavorite = !currentFavoriteStatus
+                                    isFavorite = !currentStatus
                                 )
                             }
                         ) {
+                            val favoriteActive = uiState.recipe?.isFavorite == true
                             Icon(
-                                imageVector = if (uiState.recipe?.isFavorite ?: false) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                                imageVector = if (favoriteActive) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
                                 contentDescription = null,
-                                tint = if (uiState.recipe?.isFavorite ?: false) Color.Red else MaterialTheme.colorScheme.onPrimary
+                                tint = if (favoriteActive) Color.Red else MaterialTheme.colorScheme.onPrimary
                             )
                         }
                     },

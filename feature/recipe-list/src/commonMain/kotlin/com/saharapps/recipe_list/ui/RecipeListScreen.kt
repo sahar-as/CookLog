@@ -165,10 +165,10 @@ fun RecipeListScreen(
                         onClick = { recipeId ->
                             onRecipeClick(recipeId)
                         },
-                        onFavoriteToggle = { isFavorite ->
+                        onFavoriteClick = {
                             viewModel.updateFavoriteState(
                                 recipeId = recipe.id,
-                                isFavorite = isFavorite
+                                isFavorite = !recipe.isFavorite
                             )
                         }
                     )
@@ -182,7 +182,7 @@ fun RecipeListScreen(
 fun RecipeHorizontalCard(
     item: RecipeItem,
     onClick: (Long) -> Unit,
-    onFavoriteToggle: (Boolean) -> Unit
+    onFavoriteClick: () -> Unit
 ) {
     val painter = when (val img = item.image) {
         is CookLogImage.Resource -> painterResource(img.res)
@@ -227,7 +227,7 @@ fun RecipeHorizontalCard(
                 contentAlignment = Alignment.Center
             ) {
                 IconButton(
-                    onClick = { onFavoriteToggle(item.isFavorite) }
+                    onClick = { onFavoriteClick() }
                 ) {
                     Icon(
                         imageVector = if (item.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,

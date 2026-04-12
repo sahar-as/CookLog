@@ -55,6 +55,17 @@ class RecipeListViewModel(
         isFavorite: Boolean
     ){
         viewModelScope.launch {
+            _recipeListUiState.update { currentState ->
+                val updatedList = currentState.recipes.map { recipe ->
+                    if (recipe.id == recipeId) {
+                        recipe.copy(isFavorite = isFavorite)
+                    } else {
+                        recipe
+                    }
+                }
+                currentState.copy(recipes = updatedList)
+            }
+
             updateFavoriteStatusUseCase(
                 recipeId = recipeId,
                 isFavorite = isFavorite

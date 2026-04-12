@@ -18,8 +18,8 @@ class RecipeDetailViewModel(
     val recipeUiState = _recipeUiState.asStateFlow()
     fun getRecipeById(id: Long) {
         viewModelScope.launch {
-            _recipeUiState.update {
-                it.copy(viewStatus = ViewStatus.LOADING)
+            if (_recipeUiState.value.recipe == null) {
+                _recipeUiState.update { it.copy(viewStatus = ViewStatus.LOADING) }
             }
             val result = getRecipeByIdUseCase(id)
             result.onSuccess { recipe ->
@@ -49,6 +49,7 @@ class RecipeDetailViewModel(
                 recipeId = recipeId,
                 isFavorite = isFavorite
             )
+            getRecipeById(recipeId)
         }
     }
 }
