@@ -40,7 +40,7 @@ fun CookLogNavHost(navController: NavHostController) {
                 onRecipeClick = { recipeId ->
                     navController.navigate(Route.RecipeDetail(recipeId))
                 },
-                onBack = {},
+                onBack = { navController.popBackStack() },
                 onClickAddRecipe = { catalogId, recipeId ->
                     navController.navigate(Route.RecipeEdit(catalogId, recipeId))
                 }
@@ -53,8 +53,7 @@ fun CookLogNavHost(navController: NavHostController) {
                 catalogId = args.catalogId,
                 recipeId = args.recipeId,
                 viewModel = recipeEditViewModel,
-                onSave = { name, explanation, image -> },
-                onCancel = {}
+                onCancel = { navController.popBackStack() }
             )
         }
 
@@ -64,7 +63,7 @@ fun CookLogNavHost(navController: NavHostController) {
             RecipeDetailScreen(
                 recipeId = args.recipeId,
                 viewModel = recipeDetailViewModel,
-                onBack = {},
+                onBack = { navController.popBackStack() },
                 onDelete = {},
                 onEdit = {},
             )

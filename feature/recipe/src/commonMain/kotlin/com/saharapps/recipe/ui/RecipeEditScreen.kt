@@ -65,7 +65,6 @@ fun RecipeEditScreen(
     catalogId: Long,
     recipeId: Long?,
     viewModel: RecipeEditViewModel,
-    onSave: (String, String, CookLogImage) -> Unit,
     onCancel: () -> Unit
 ) {
     val uiState by viewModel.recipeUiState.collectAsStateWithLifecycle()
