@@ -1,42 +1,20 @@
-This is a Kotlin Multiplatform project targeting Android, iOS.
+# CookLog
 
-* [/composeApp](./composeApp/src) is for code that will be shared across your Compose Multiplatform applications.
-  It contains several subfolders:
-  - [commonMain](./composeApp/src/commonMain/kotlin) is for code that’s common for all targets.
-  - Other folders are for Kotlin code that will be compiled for only the platform indicated in the folder name.
-    For example, if you want to use Apple’s CoreCrypto for the iOS part of your Kotlin app,
-    the [iosMain](./composeApp/src/iosMain/kotlin) folder would be the right place for such calls.
-    Similarly, if you want to edit the Desktop (JVM) specific part, the [jvmMain](./composeApp/src/jvmMain/kotlin)
-    folder is the appropriate location.
-
-* [/iosApp](./iosApp/iosApp) contains iOS applications. Even if you’re sharing your UI with Compose Multiplatform,
-  you need this entry point for your iOS app. This is also where you should add SwiftUI code for your project.
-
-### Build and Run Android Application
-
-To build and run the development version of the Android app, use the run configuration from the run widget
-in your IDE’s toolbar or build it directly from the terminal:
-- on macOS/Linux
-  ```shell
-  ./gradlew :composeApp:assembleDebug
-  ```
-- on Windows
-  ```shell
-  .\gradlew.bat :composeApp:assembleDebug
-  ```
-
-### Build and Run iOS Application
-
-To build and run the development version of the iOS app, use the run configuration from the run widget
-in your IDE’s toolbar or open the [/iosApp](./iosApp) directory in Xcode and run it from there.
-
----
-
-Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html)…
+<img width="2752" height="1536" alt="cooklog_github_banner" src="https://github.com/user-attachments/assets/ddca9d46-9356-4f6e-ba04-9228d2d3833e" />
 
 
-CookLog is a sample of the Compose Multiplatform project. The UI contains four different screens:
-* Home Screen (Category Screen): In the Catalog Screen, you can add a new category, choose an image from the gallary or use a default image. search among these categories. 
-* Recipes Screen:
-* Recipe Detail Screen:
-* Recipe Edit Screen:
+CookLog is a modern, cross-platform recipe management application built with the Compose Multiplatform framework. It allows users to organize their culinary world by creating categories, managing recipes, and tracking cooking details with a seamless experience on both Android and iOS.
+
+## Features
+* Category Management: Organize recipes into custom categories with personalized images (Gallery or Defaults).
+* Smart Search: Quickly filter through your categories to find exactly what you're looking for.
+* Full CRUD Operations: Create, Read, Update, and Delete recipes with a dedicated Detail and Edit flow.
+* Modern UI: Built entirely with Jetpack Compose for a smooth, declarative interface across platforms.
+
+## Tech Stack & Architecture
+This project follows a clean, multi-module architecture to ensure separation of concerns and scalability.
+* UI: Compose Multiplatform (Android/iOS)
+* Dependency Injection: Koin
+* Local Database: Room 
+* Build System: Convention Plugins (Build Logic) for centralized Gradle management.
+* Navigation: Compose Navigation.
