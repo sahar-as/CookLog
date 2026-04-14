@@ -11,5 +11,7 @@ val LightColorScheme = lightColorScheme(
     background = SoftWhite,
     surface = SoftWhite,
     primaryContainer = LightMint,
-    onPrimaryContainer = ForestGreen
+    onPrimaryContainer = ForestGreen,
+    secondaryContainer = lightGreen,
+    onSecondaryContainer = SageGreen,
 )

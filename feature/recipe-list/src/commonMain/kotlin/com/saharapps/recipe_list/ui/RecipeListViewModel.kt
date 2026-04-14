@@ -44,9 +44,10 @@ class RecipeListViewModel(
         }
     }
 
-    fun deleteRecipe(recipeId: Long){
+    fun deleteRecipes(recipeIds: List<Long>, catalogId: Long) {
         viewModelScope.launch {
-            deleteRecipeUseCase(recipeId)
+            recipeIds.forEach { deleteRecipeUseCase(it) }
+            getRecipesByCatalog(catalogId)
         }
     }
 

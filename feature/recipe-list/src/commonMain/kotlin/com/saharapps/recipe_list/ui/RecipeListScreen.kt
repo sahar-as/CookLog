@@ -1,7 +1,10 @@
 package com.saharapps.recipe_list.ui
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,14 +16,19 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Search
@@ -32,6 +40,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -45,6 +54,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Brush
@@ -59,6 +69,7 @@ import com.saharapps.common.model.CookLogImage
 import com.saharapps.common.model.RecipeItem
 import com.saharapps.ui.theme.LightColorScheme
 import cooklog.feature.recipe_list.generated.resources.Res
+import cooklog.feature.recipe_list.generated.resources.cancel
 import cooklog.feature.recipe_list.generated.resources.recipes
 import cooklog.feature.recipe_list.generated.resources.search
 import org.jetbrains.compose.resources.painterResource
@@ -74,13 +85,18 @@ fun RecipeListScreen(
     onClickAddRecipe: (Long, Long?) -> Unit
 ) {
     val uiState by viewModel.recipeListUiState.collectAsStateWithLifecycle()
-    LaunchedEffect(Unit) {
-        viewModel.getRecipesByCatalog(catalogId)
-    }
-
     var isSearchExpanded by remember { mutableStateOf(false) }
     var searchQuery by remember { mutableStateOf("") }
     val focusRequester = remember { FocusRequester() }
+    var selectedIds by remember { mutableStateOf(setOf<Long>()) }
+    val isSelectionMode = selectedIds.isNotEmpty()
+
+    LaunchedEffect(isSearchExpanded) {
+        if (isSearchExpanded) selectedIds = emptySet()
+    }
+    LaunchedEffect(Unit) {
+        viewModel.getRecipesByCatalog(catalogId)
+    }
 
     val filteredRecipes = uiState.recipes.filter {
         it.name.contains(searchQuery, ignoreCase = true)
@@ -89,57 +105,84 @@ fun RecipeListScreen(
     MaterialTheme(colorScheme = LightColorScheme) {
         Scaffold(
             topBar = {
-                TopAppBar(
-                    colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        titleContentColor = MaterialTheme.colorScheme.onPrimary,
-                        actionIconContentColor = MaterialTheme.colorScheme.onPrimary
-                    ),
-                    navigationIcon = {
-                        IconButton(onClick = onBack) {
-                            Icon(Icons.Default.ArrowBack, contentDescription = null)
+                if (isSelectionMode) {
+                    TopAppBar(
+                        title = { Text("${selectedIds.size} Selected") },
+                        colors = TopAppBarDefaults.topAppBarColors(
+                            containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                            titleContentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                        ),
+                        navigationIcon = {
+                            IconButton(onClick = { selectedIds = emptySet() }) {
+                                Icon(Icons.Default.Close, null)
+                            }
+                        },
+                        actions = {
+                            IconButton(onClick = {
+                                viewModel.deleteRecipes(selectedIds.toList(), catalogId)
+                                selectedIds = emptySet()
+                            }) {
+                                Icon(Icons.Default.Delete, null)
+                            }
                         }
-                    },
-                    title = {
-                        if (!isSearchExpanded) {
-                            Text(stringResource(Res.string.recipes))
-                        } else {
-                            TextField(
-                                value = searchQuery,
-                                onValueChange = { searchQuery = it },
-                                modifier = Modifier.fillMaxWidth().focusRequester(focusRequester),
-                                placeholder = {
-                                    Text(
-                                        stringResource(Res.string.search),
-                                        color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f)
-                                    )
-                                },
-                                colors = TextFieldDefaults.colors(
-                                    focusedContainerColor = Color.Transparent,
-                                    unfocusedContainerColor = Color.Transparent,
-                                    cursorColor = MaterialTheme.colorScheme.onPrimary,
-                                    focusedTextColor = MaterialTheme.colorScheme.onPrimary,
-                                    unfocusedTextColor = MaterialTheme.colorScheme.onPrimary,
-                                    focusedIndicatorColor = Color.White,
-                                    unfocusedIndicatorColor = Color.White.copy(alpha = 0.5f)
-                                ),
-                                singleLine = true
-                            )
-                            LaunchedEffect(Unit) { focusRequester.requestFocus() }
+                    )
+                }else{
+                    TopAppBar(
+                        colors = TopAppBarDefaults.topAppBarColors(
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            titleContentColor = MaterialTheme.colorScheme.onPrimary,
+                            actionIconContentColor = MaterialTheme.colorScheme.onPrimary
+                        ),
+                        navigationIcon = {
+                            IconButton(onClick = onBack) {
+                                Icon(
+                                    Icons.Default.ArrowBack,
+                                    contentDescription = stringResource(Res.string.cancel),
+                                    tint = Color.White
+                                )
+                            }
+                        },
+                        title = {
+                            if (!isSearchExpanded) {
+                                Text(stringResource(Res.string.recipes))
+                            } else {
+                                TextField(
+                                    value = searchQuery,
+                                    onValueChange = { searchQuery = it },
+                                    modifier = Modifier.fillMaxWidth().focusRequester(focusRequester),
+                                    placeholder = {
+                                        Text(
+                                            stringResource(Res.string.search),
+                                            color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f)
+                                        )
+                                    },
+                                    colors = TextFieldDefaults.colors(
+                                        focusedContainerColor = Color.Transparent,
+                                        unfocusedContainerColor = Color.Transparent,
+                                        cursorColor = MaterialTheme.colorScheme.onPrimary,
+                                        focusedTextColor = MaterialTheme.colorScheme.onPrimary,
+                                        unfocusedTextColor = MaterialTheme.colorScheme.onPrimary,
+                                        focusedIndicatorColor = Color.White,
+                                        unfocusedIndicatorColor = Color.White.copy(alpha = 0.5f)
+                                    ),
+                                    singleLine = true
+                                )
+                                LaunchedEffect(Unit) { focusRequester.requestFocus() }
+                            }
+                        },
+                        actions = {
+                            IconButton(onClick = {
+                                isSearchExpanded = !isSearchExpanded
+                                if (!isSearchExpanded) searchQuery = ""
+                            }) {
+                                Icon(
+                                    imageVector = if (isSearchExpanded) Icons.Default.Close else Icons.Default.Search,
+                                    contentDescription = null
+                                )
+                            }
                         }
-                    },
-                    actions = {
-                        IconButton(onClick = {
-                            isSearchExpanded = !isSearchExpanded
-                            if (!isSearchExpanded) searchQuery = ""
-                        }) {
-                            Icon(
-                                imageVector = if (isSearchExpanded) Icons.Default.Close else Icons.Default.Search,
-                                contentDescription = null
-                            )
-                        }
-                    }
-                )
+                    )
+                }
             },
             floatingActionButton = {
                 FloatingActionButton(
@@ -159,29 +202,51 @@ fun RecipeListScreen(
                 contentPadding = PaddingValues(16.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                items(filteredRecipes) { recipe ->
-                    RecipeHorizontalCard(
-                        item = recipe,
-                        onClick = { recipeId ->
-                            onRecipeClick(recipeId)
-                        },
-                        onFavoriteClick = {
-                            viewModel.updateFavoriteState(
-                                recipeId = recipe.id,
-                                isFavorite = !recipe.isFavorite
-                            )
-                        }
-                    )
+                items(
+                    items = filteredRecipes,
+                    key = { it.id }
+                ) { recipe ->
+                    val isSelected = selectedIds.contains(recipe.id)
+
+                    Box(modifier = Modifier.fillMaxWidth()) {
+                        RecipeHorizontalCard(
+                            item = recipe,
+                            isSelected = isSelected,
+                            onClick = { id ->
+                                if (isSelectionMode) {
+                                    selectedIds = if (isSelected) selectedIds - id else selectedIds + id
+                                } else {
+                                    onRecipeClick(id)
+                                }
+                            },
+                            onLongClick = { id ->
+                                if (!isSelectionMode) {
+                                    selectedIds = selectedIds + id
+                                }
+                            },
+                            onFavoriteClick = {
+                                if (!isSelectionMode) {
+                                    viewModel.updateFavoriteState(
+                                        recipeId = recipe.id,
+                                        isFavorite = !recipe.isFavorite
+                                    )
+                                }
+                            }
+                        )
+                    }
                 }
             }
         }
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun RecipeHorizontalCard(
     item: RecipeItem,
+    isSelected: Boolean,
     onClick: (Long) -> Unit,
+    onLongClick: (Long) -> Unit,
     onFavoriteClick: () -> Unit
 ) {
     val painter = when (val img = item.image) {
@@ -195,10 +260,22 @@ fun RecipeHorizontalCard(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(120.dp),
+            .height(120.dp)
+            .clip(RoundedCornerShape(12.dp))
+            .combinedClickable(
+                onClick = { onClick(item.id) },
+                onLongClick = { onLongClick(item.id) }
+            ),
         shape = RoundedCornerShape(12.dp),
-        onClick = { onClick(item.id) },
-        colors = CardDefaults.cardColors(containerColor = Color.White)
+        border = if (isSelected) BorderStroke(2.dp, MaterialTheme.colorScheme.primary) else null,
+        colors = CardDefaults.cardColors(
+            containerColor = if (isSelected) {
+                MaterialTheme.colorScheme.primary.copy(alpha = 0.08f)
+            } else {
+                Color.White
+            }
+        ),
+        elevation = CardDefaults.cardElevation(if (isSelected) 0.dp else 2.dp)
     ) {
         Row(modifier = Modifier.fillMaxSize()) {
             Box(modifier = Modifier.width(120.dp).fillMaxHeight()) {
@@ -206,20 +283,31 @@ fun RecipeHorizontalCard(
                     painter = painter,
                     contentDescription = null,
                     contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .width(120.dp)
-                        .fillMaxHeight()
+                    modifier = Modifier.fillMaxSize()
                 )
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
                         .background(
                             Brush.verticalGradient(
-                                colors = listOf(Color.Transparent, Color.Black.copy(alpha = 0.6f)),
-                                startY = 150f
+                                colors = listOf(Color.Transparent, Color.Black.copy(alpha = 0.4f)),
+                                startY = 100f
                             )
                         )
                 )
+
+                if (isSelected) {
+                    Icon(
+                        imageVector = Icons.Default.CheckCircle,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier
+                            .padding(6.dp)
+                            .size(20.dp)
+                            .align(Alignment.TopStart)
+                            .background(Color.White, CircleShape)
+                    )
+                }
             }
 
             Box(
@@ -227,7 +315,8 @@ fun RecipeHorizontalCard(
                 contentAlignment = Alignment.Center
             ) {
                 IconButton(
-                    onClick = { onFavoriteClick() }
+                    onClick = { onFavoriteClick() },
+                    enabled = !isSelected
                 ) {
                     Icon(
                         imageVector = if (item.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
@@ -239,7 +328,8 @@ fun RecipeHorizontalCard(
 
             Column(
                 modifier = Modifier
-                    .fillMaxSize()
+                    .weight(1f)
+                    .fillMaxHeight()
                     .padding(12.dp),
                 verticalArrangement = Arrangement.Center
             ) {
@@ -254,7 +344,7 @@ fun RecipeHorizontalCard(
                 Text(
                     text = item.explanation,
                     style = MaterialTheme.typography.bodySmall,
-                    color = Color.Gray,
+                    color = Color.DarkGray,
                     maxLines = 3,
                     overflow = TextOverflow.Ellipsis
                 )

@@ -81,7 +81,6 @@ fun CatalogScreen(
     }
 
     var catalogToDelete by remember { mutableStateOf<CatalogItem?>(null) }
-
     var isSearchExpanded by remember { mutableStateOf(false) }
     var searchQuery by remember { mutableStateOf("") }
     val focusRequester = remember { FocusRequester() }
