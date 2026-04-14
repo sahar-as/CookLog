@@ -6,7 +6,8 @@
 CookLog is a modern, cross-platform recipe management application built with the Compose Multiplatform framework. It allows users to organize their culinary world by creating categories, managing recipes, and tracking cooking details with a seamless experience on both Android and iOS.
 
 ## Features
-* Category Management: Organize recipes into custom categories with personalized images (Gallery or Defaults).
+* Category Management: Organize recipes into custom categories, which are considered as a catalog screen with personalized images (Gallery or Defaults).
+* Recipe: the user can add different recipes to the recipe list of each catalog.
 * Smart Search: Quickly filter through your categories to find exactly what you're looking for.
 * Full CRUD Operations: Create, Read, Update, and Delete recipes with a dedicated Detail and Edit flow.
 * Modern UI: Built entirely with Jetpack Compose for a smooth, declarative interface across platforms.
