@@ -11,7 +11,7 @@ class CatalogApp : Application() {
     override fun onCreate() {
         super.onCreate()
 
-        initKoinAndroid(this)
+        initKoinAndroid(this@CatalogApp)
     }
 }
 

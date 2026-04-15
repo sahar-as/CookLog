@@ -9,13 +9,8 @@ import org.koin.compose.KoinApplication
 @Composable
 @Preview
 fun App() {
-    KoinApplication(application = {
-        printLogger()
-        modules(appModule)
-    }) {
-        MaterialTheme {
-            val navController = rememberNavController()
-            CookLogNavHost(navController)
-        }
+    MaterialTheme {
+        val navController = rememberNavController()
+        CookLogNavHost(navController)
     }
 }
