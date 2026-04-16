@@ -15,20 +15,24 @@ class SaveRecipeUseCaseImpl(
     }
 
     private fun RecipeItem.toRecipeEntity(): RecipeEntity {
-        val imageBytes: ByteArray? =
-            if (image is CookLogImage.Bitmap) (image as CookLogImage.Bitmap).data else null
-        val resIndex: Int? = if (image is CookLogImage.Resource) {
-            val index = RecipeDefaults.list.indexOf((image as CookLogImage.Resource).res)
-            if (index != -1) index else null
-        } else {
-            null
-        }
+        val imageBytes: ByteArray? = images
+            .filterIsInstance<CookLogImage.Bitmap>()
+            .firstOrNull()?.data
+        val resIndicesString: String = images
+            .filterIsInstance<CookLogImage.Resource>()
+            .map { resource ->
+                RecipeDefaults.list.indexOf(resource.res)
+            }
+            .filter { it != -1 }
+            .joinToString(separator = ",")
+
         return RecipeEntity(
             id = id,
             name = name,
             explanation = explanation,
-            image = imageBytes,
-            resourceIndex = resIndex,
+            images = imageBytes,
+            cookTime = cookTime,
+            resourceIndices = resIndicesString,
             isFavorite = isFavorite,
             catalogId = catalogId
         )

@@ -40,3 +40,34 @@ actual fun rememberImagePicker(onImagePicked: (ByteArray?) -> Unit): ImagePicker
         }
     }
 }
+
+
+@Composable
+actual fun rememberImageListPicker(onImagePicked: (ByteArray?) -> Unit): ImagePicker {
+    val context = LocalContext.current
+
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickMultipleVisualMedia(maxItems = 5)
+    ) { uris: List<Uri> ->
+        uris.forEach { uri ->
+            try {
+                val bytes = context.contentResolver.openInputStream(uri)?.use { inputStream ->
+                    inputStream.readBytes()
+                }
+                onImagePicked(bytes)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    return remember {
+        object : ImagePicker {
+            override fun launch() {
+                launcher.launch(
+                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                )
+            }
+        }
+    }
+}

@@ -24,13 +24,14 @@ class GetRecipeByIdUseCaseImpl(
     }
 
     private fun RecipeEntity.toRecipeItem(): RecipeItem {
-        val image = getImage(this)
+        val image = getImages(this)
         val recipeItem =
             RecipeItem(
                 id = id,
                 name = name,
                 explanation = explanation,
-                image = image,
+                images = image,
+                cookTime = cookTime,
                 isFavorite = isFavorite,
                 catalogId = catalogId
             )
@@ -38,19 +39,26 @@ class GetRecipeByIdUseCaseImpl(
         return recipeItem
     }
 
-    private fun getImage(entity: RecipeEntity): CookLogImage {
-        return when {
-            entity.image != null -> {
-                CookLogImage.Bitmap(entity.image!!)
-            }
+    private fun getImages(entity: RecipeEntity): List<CookLogImage> {
+        val list = mutableListOf<CookLogImage>()
 
-            entity.resourceIndex != null && entity.resourceIndex in RecipeDefaults.list.indices -> {
-                CookLogImage.Resource(RecipeDefaults.list[entity.resourceIndex!!])
-            }
-
-            else -> {
-                CookLogImage.Resource(Res.drawable.default)
-            }
+        entity.images?.let {
+            list.add(CookLogImage.Bitmap(it))
         }
+
+        entity.resourceIndices?.split(",")
+            ?.filter { it.isNotBlank() }
+            ?.forEach { indexStr ->
+                val index = indexStr.toIntOrNull()
+                if (index != null && index in RecipeDefaults.list.indices) {
+                    list.add(CookLogImage.Resource(RecipeDefaults.list[index]))
+                }
+            }
+
+        if (list.isEmpty()) {
+            list.add(CookLogImage.Resource(Res.drawable.default))
+        }
+
+        return list
     }
 }

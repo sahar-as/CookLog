@@ -7,7 +7,6 @@ import com.saharapps.recipe_list.data.RecipeListRepository
 import com.saharapps.common.model.RecipeDefaults
 import cooklog.feature.recipe_list.generated.resources.Res
 import cooklog.feature.recipe_list.generated.resources.default
-import kotlin.ranges.contains
 
 internal class GetRecipesByCatalogUseCaseImpl(
     private val recipeListRepository: RecipeListRepository
@@ -26,12 +25,12 @@ internal class GetRecipesByCatalogUseCaseImpl(
 
     private fun List<RecipeEntity>.toRecipeItems(): List<RecipeItem> {
         val recipeItems = this.map { entity ->
-            val image = getImage(entity)
+            val images = getImages(entity)
             RecipeItem(
                 id = entity.id,
                 name = entity.name,
                 explanation = entity.explanation,
-                image = image,
+                images = images,
                 isFavorite = entity.isFavorite,
                 catalogId = entity.catalogId
             )
@@ -39,19 +38,26 @@ internal class GetRecipesByCatalogUseCaseImpl(
         return recipeItems
     }
 
-    private fun getImage(entity: RecipeEntity): CookLogImage {
-        return when {
-            entity.image != null -> {
-                CookLogImage.Bitmap(entity.image!!)
-            }
+    private fun getImages(entity: RecipeEntity): List<CookLogImage> {
+        val list = mutableListOf<CookLogImage>()
 
-            entity.resourceIndex != null && entity.resourceIndex in RecipeDefaults.list.indices -> {
-                CookLogImage.Resource(RecipeDefaults.list[entity.resourceIndex!!])
-            }
-
-            else -> {
-                CookLogImage.Resource(Res.drawable.default)
-            }
+        entity.images?.let {
+            list.add(CookLogImage.Bitmap(it))
         }
+
+        entity.resourceIndices?.split(",")
+            ?.filter { it.isNotBlank() }
+            ?.forEach { indexStr ->
+                val index = indexStr.toIntOrNull()
+                if (index != null && index in RecipeDefaults.list.indices) {
+                    list.add(CookLogImage.Resource(RecipeDefaults.list[index]))
+                }
+            }
+
+        if (list.isEmpty()) {
+            list.add(CookLogImage.Resource(Res.drawable.default))
+        }
+
+        return list
     }
 }

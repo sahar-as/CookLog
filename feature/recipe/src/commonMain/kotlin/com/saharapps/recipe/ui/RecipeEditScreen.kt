@@ -1,6 +1,5 @@
 package com.saharapps.recipe.ui
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -13,12 +12,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AddAPhoto
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -35,30 +36,32 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.saharapps.common.model.CookLogImage
-import com.saharapps.common.model.RecipeDefaults
 import com.saharapps.common.model.RecipeItem
+import com.saharapps.common.rememberImageListPicker
+import com.saharapps.recipe.ui.component.RecipeImageRenderer
 import com.saharapps.ui.theme.LightColorScheme
 import cooklog.feature.recipe.generated.resources.Res
-import cooklog.feature.recipe.generated.resources.choose_default_image
 import cooklog.feature.recipe.generated.resources.close
+import cooklog.feature.recipe.generated.resources.cook_time_minutes
 import cooklog.feature.recipe.generated.resources.create
 import cooklog.feature.recipe.generated.resources.create_new_entry
-import cooklog.feature.recipe.generated.resources.default
 import cooklog.feature.recipe.generated.resources.edit_recipe
+import cooklog.feature.recipe.generated.resources.mins
 import cooklog.feature.recipe.generated.resources.name
 import cooklog.feature.recipe.generated.resources.recipe
-import org.jetbrains.compose.resources.painterResource
+import cooklog.feature.recipe.generated.resources.recipe_images
 import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -71,11 +74,17 @@ fun RecipeEditScreen(
 ) {
     val uiState by viewModel.recipeUiState.collectAsStateWithLifecycle()
 
-    var name by remember { mutableStateOf("") }
-    var explanation by remember { mutableStateOf("") }
-    var selectedImage by remember { mutableStateOf<CookLogImage?>(null) }
-    var isFavorite by remember { mutableStateOf(false) }
-    var cookTime by remember { mutableStateOf("0") }
+    var name by rememberSaveable { mutableStateOf("") }
+    var explanation by rememberSaveable { mutableStateOf("") }
+    var isFavorite by rememberSaveable { mutableStateOf(false) }
+    var cookTime by rememberSaveable { mutableStateOf("") }
+    val selectedImages = rememberSaveable { mutableStateListOf<CookLogImage>() }
+
+    val imagePicker = rememberImageListPicker { bytes ->
+        if (bytes != null) {
+            selectedImages.add(CookLogImage.Bitmap(bytes))
+        }
+    }
 
     LaunchedEffect(recipeId) {
         if (recipeId != null && recipeId != 0L) {
@@ -87,8 +96,10 @@ fun RecipeEditScreen(
         uiState.recipe?.let { recipe ->
             name = recipe.name
             explanation = recipe.explanation
-            selectedImage = recipe.image
             isFavorite = recipe.isFavorite
+            cookTime = recipe.cookTime.toString()
+            selectedImages.clear()
+            selectedImages.addAll(recipe.images)
         }
     }
 
@@ -140,31 +151,53 @@ fun RecipeEditScreen(
                     )
                 )
 
-                Text(
-                    stringResource(Res.string.choose_default_image),
-                    style = MaterialTheme.typography.titleSmall,
-                    color = MaterialTheme.colorScheme.primary
-                )
+                Text(stringResource(Res.string.recipe_images), style = MaterialTheme.typography.titleSmall)
+                LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    items(selectedImages) { img ->
+                        Box(modifier = Modifier.size(100.dp)) {
+                            RecipeImageRenderer(img)
+                            IconButton(
+                                onClick = {
+                                    selectedImages.remove(img)
+                                          },
+                                modifier = Modifier
+                                    .align(Alignment.TopEnd)
+                                    .background(Color.Black.copy(0.4f), CircleShape)
+                                    .size(24.dp)
+                            ) {
+                                Icon(
+                                    Icons.Default.Close,
+                                    null,
+                                    tint = Color.White,
+                                    modifier = Modifier.size(16.dp)
+                                )
+                            }
+                        }
+                    }
 
-                LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    itemsIndexed(RecipeDefaults.list) { index, res ->
-                        val isSelected = (selectedImage as? CookLogImage.Resource)?.res == res
+                    item {
                         Box(
                             modifier = Modifier
-                                .size(90.dp)
-                                .clip(RoundedCornerShape(12.dp))
-                                .border(
-                                    width = if (isSelected) 3.dp else 1.dp,
-                                    color = if (isSelected) MaterialTheme.colorScheme.secondary else Color.Gray,
-                                    shape = RoundedCornerShape(12.dp)
-                                )
-                                .clickable { selectedImage = CookLogImage.Resource(res) }
+                                .size(100.dp)
+                                .clip(RoundedCornerShape(8.dp))
+                                .border(1.dp, Color.Gray, RoundedCornerShape(8.dp))
+                                .clickable {
+                                    imagePicker.launch()
+                                },
+                            contentAlignment = Alignment.Center
                         ) {
-                            Image(
-                                painterResource(res),
-                                null,
-                                contentScale = ContentScale.Crop
-                            )
+                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                Icon(
+                                    imageVector = Icons.Default.AddAPhoto,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.primary
+                                )
+                                Text(
+                                    text = "Add",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                            }
                         }
                     }
                 }
@@ -172,10 +205,15 @@ fun RecipeEditScreen(
                 OutlinedTextField(
                     value = cookTime,
                     onValueChange = { if (it.all { char -> char.isDigit() }) cookTime = it },
-                    label = { Text("Cook Time (minutes)") },
+                    label = { Text(stringResource(Res.string.cook_time_minutes)) },
                     modifier = Modifier.fillMaxWidth(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    trailingIcon = { Text("mins", modifier = Modifier.padding(end = 8.dp)) }
+                    trailingIcon = {
+                        Text(
+                            stringResource(Res.string.mins),
+                            modifier = Modifier.padding(end = 8.dp)
+                        )
+                    }
                 )
 
                 OutlinedTextField(
@@ -195,7 +233,8 @@ fun RecipeEditScreen(
                             id = recipeId ?: 0L,
                             name = name,
                             explanation = explanation,
-                            image = selectedImage ?: CookLogImage.Resource(Res.drawable.default),
+                            images = selectedImages.toList(),
+                            cookTime = cookTime.toIntOrNull() ?: 0,
                             isFavorite = isFavorite,
                             catalogId = catalogId
                         )

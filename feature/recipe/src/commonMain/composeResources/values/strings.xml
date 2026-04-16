@@ -14,4 +14,7 @@
     <string name="no_image_selected">No image selected!</string>
     <string name="close">Close</string>
     <string name="choose_default_image">Choose a Default Image</string>
+    <string name="cook_time_minutes">Cook Time (minutes)</string>
+    <string name="mins">mins</string>
+    <string name="recipe_images">Recipe Images</string>
 </resources>

@@ -25,7 +25,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
@@ -40,7 +39,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -70,6 +68,7 @@ import com.saharapps.common.model.RecipeItem
 import com.saharapps.ui.theme.LightColorScheme
 import cooklog.feature.recipe_list.generated.resources.Res
 import cooklog.feature.recipe_list.generated.resources.cancel
+import cooklog.feature.recipe_list.generated.resources.default
 import cooklog.feature.recipe_list.generated.resources.recipes
 import cooklog.feature.recipe_list.generated.resources.search
 import org.jetbrains.compose.resources.painterResource
@@ -249,10 +248,12 @@ fun RecipeHorizontalCard(
     onLongClick: (Long) -> Unit,
     onFavoriteClick: () -> Unit
 ) {
-    val painter = when (val img = item.image) {
-        is CookLogImage.Resource -> painterResource(img.res)
+    val firstImage = item.images.firstOrNull() ?: CookLogImage.Resource(Res.drawable.default)
+
+    val painter = when (firstImage) {
+        is CookLogImage.Resource -> painterResource(firstImage.res)
         is CookLogImage.Bitmap -> {
-            val bitmap = remember(img.data) { img.data.decodeToImageBitmap() }
+            val bitmap = remember(firstImage.data) { firstImage.data.decodeToImageBitmap() }
             remember(bitmap) { BitmapPainter(bitmap) }
         }
     }

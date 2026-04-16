@@ -150,7 +150,7 @@ fun RecipeDetailScreen(
                                     shape = RoundedCornerShape(24.dp),
                                     elevation = CardDefaults.cardElevation(4.dp)
                                 ) {
-                                    RecipeImageRenderer(recipe.image)
+                                    RecipeImageRenderer(recipe.images)
                                 }
                             }
 

@@ -8,3 +8,6 @@ interface ImagePicker {
 
 @Composable
 expect fun rememberImagePicker(onImagePicked: (ByteArray?) -> Unit): ImagePicker
+@Composable
+
+expect fun rememberImageListPicker(onImagePicked: (ByteArray?) -> Unit): ImagePicker
