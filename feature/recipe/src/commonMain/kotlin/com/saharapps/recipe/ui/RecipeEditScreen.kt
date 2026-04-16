@@ -16,6 +16,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
@@ -41,6 +42,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.saharapps.common.model.CookLogImage
@@ -73,6 +75,7 @@ fun RecipeEditScreen(
     var explanation by remember { mutableStateOf("") }
     var selectedImage by remember { mutableStateOf<CookLogImage?>(null) }
     var isFavorite by remember { mutableStateOf(false) }
+    var cookTime by remember { mutableStateOf("0") }
 
     LaunchedEffect(recipeId) {
         if (recipeId != null && recipeId != 0L) {
@@ -165,6 +168,15 @@ fun RecipeEditScreen(
                         }
                     }
                 }
+
+                OutlinedTextField(
+                    value = cookTime,
+                    onValueChange = { if (it.all { char -> char.isDigit() }) cookTime = it },
+                    label = { Text("Cook Time (minutes)") },
+                    modifier = Modifier.fillMaxWidth(),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    trailingIcon = { Text("mins", modifier = Modifier.padding(end = 8.dp)) }
+                )
 
                 OutlinedTextField(
                     value = explanation,

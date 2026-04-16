@@ -5,6 +5,7 @@ data class RecipeItem(
     val name: String,
     val explanation: String,
     val image: CookLogImage,
+    val cookTime: Int = 0,
     val isFavorite: Boolean = false,
     val catalogId: Long,
 )
