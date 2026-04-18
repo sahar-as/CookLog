@@ -9,5 +9,4 @@ data class CatalogEntity(
     val id: Long = 0,
     val name: String,
     val imageData: ByteArray?,
-    val isResource: Boolean,
 )

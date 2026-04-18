@@ -5,6 +5,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,6 +15,9 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.BrokenImage
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -23,41 +27,60 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
-import com.saharapps.common.model.CookLogImage
 import org.jetbrains.compose.resources.decodeToImageBitmap
-import org.jetbrains.compose.resources.painterResource
 
 @Composable
 fun RecipeImageRenderer(
-    image: CookLogImage,
+    imageData: ByteArray?,
     modifier: Modifier = Modifier
 ) {
-    val painter = when (image) {
-        is CookLogImage.Resource -> painterResource(image.res)
-        is CookLogImage.Bitmap -> {
-            val bitmap = remember(image.data) {
-                image.data.decodeToImageBitmap()
+    val bitmap = remember(imageData) {
+        if (imageData != null && imageData.isNotEmpty()) {
+            try {
+                imageData.decodeToImageBitmap()
+            } catch (e: Exception) {
+                null
             }
-            remember(bitmap) {
-                BitmapPainter(bitmap)
+        } else null
+    }
+
+    Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        if (bitmap != null) {
+            Image(
+                painter = BitmapPainter(bitmap),
+                contentDescription = null,
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop
+            )
+        } else {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.LightGray.copy(alpha = 0.3f)),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Default.BrokenImage,
+                    contentDescription = null,
+                    tint = Color.Gray,
+                    modifier = Modifier.size(48.dp)
+                )
             }
         }
     }
-
-    Image(
-        painter = painter,
-        contentDescription = null,
-        modifier = modifier.fillMaxSize(),
-        contentScale = ContentScale.Crop
-    )
 }
-
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun RecipeImageRenderer(
-    images: List<CookLogImage>,
+    images: List<ByteArray>?,
     modifier: Modifier = Modifier
 ) {
+    if (images.isNullOrEmpty()) {
+        RecipeImageRenderer(imageData = null, modifier = modifier)
+        return
+    }
+
     val pagerState = rememberPagerState(pageCount = { images.size })
 
     Box(modifier = modifier) {
@@ -65,22 +88,7 @@ fun RecipeImageRenderer(
             state = pagerState,
             modifier = Modifier.fillMaxSize()
         ) { pageIndex ->
-            val currentImage = images[pageIndex]
-
-            val painter = when (currentImage) {
-                is CookLogImage.Resource -> painterResource(currentImage.res)
-                is CookLogImage.Bitmap -> {
-                    val bitmap = remember(currentImage.data) { currentImage.data.decodeToImageBitmap() }
-                    remember(bitmap) { BitmapPainter(bitmap) }
-                }
-            }
-
-            Image(
-                painter = painter,
-                contentDescription = null,
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop
-            )
+            RecipeImageRenderer(imageData = images[pageIndex])
         }
 
         if (images.size > 1) {
@@ -89,17 +97,21 @@ fun RecipeImageRenderer(
                     .wrapContentHeight()
                     .fillMaxWidth()
                     .align(Alignment.BottomCenter)
-                    .padding(bottom = 8.dp),
+                    .padding(bottom = 12.dp),
                 horizontalArrangement = Arrangement.Center
             ) {
                 repeat(images.size) { iteration ->
-                    val color = if (pagerState.currentPage == iteration) Color.White else Color.White.copy(alpha = 0.5f)
+                    val color = if (pagerState.currentPage == iteration)
+                        Color.White
+                    else
+                        Color.White.copy(alpha = 0.5f)
+
                     Box(
                         modifier = Modifier
-                            .padding(2.dp)
+                            .padding(horizontal = 3.dp)
                             .clip(CircleShape)
                             .background(color)
-                            .size(8.dp)
+                            .size(6.dp)
                     )
                 }
             }

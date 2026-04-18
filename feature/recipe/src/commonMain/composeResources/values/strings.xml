@@ -17,4 +17,5 @@
     <string name="cook_time_minutes">Cook Time (minutes)</string>
     <string name="mins">mins</string>
     <string name="recipe_images">Recipe Images</string>
+    <string name="add">Add</string>
 </resources>

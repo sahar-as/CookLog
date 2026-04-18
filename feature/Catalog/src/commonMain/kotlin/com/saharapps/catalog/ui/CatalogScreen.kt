@@ -1,6 +1,5 @@
 package com.saharapps.catalog.ui
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
@@ -31,7 +30,6 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
@@ -55,11 +53,11 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.BitmapPainter
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.saharapps.catalog.CatalogItem
-import com.saharapps.common.model.CookLogImage
 import com.saharapps.common.rememberImagePicker
 import com.saharapps.ui.ViewStatus
 import com.saharapps.ui.theme.LightColorScheme
@@ -231,15 +229,7 @@ fun CatalogCard(
     onClickCatalog: (Long) -> Unit,
     onLongClickCatalog: (CatalogItem) -> Unit
 ) {
-    val painter = when (val img = item.image) {
-        is CookLogImage.Resource -> painterResource(img.res)
-        is CookLogImage.Bitmap -> {
-            val bitmap = remember(img.data) {
-                img.data.decodeToImageBitmap()
-            }
-            remember(bitmap) { BitmapPainter(bitmap) }
-        }
-    }
+    val painter = recipePainter(item.image)
 
     Card(
         modifier = Modifier
@@ -281,14 +271,14 @@ fun CatalogCard(
 @Composable
 fun AddCatalogDialog(
     onDismiss: () -> Unit,
-    onConfirm: (String, CookLogImage) -> Unit
+    onConfirm: (String, ByteArray) -> Unit
 ) {
     var name by remember { mutableStateOf("") }
-    var selectedImage by remember { mutableStateOf<CookLogImage?>(null) }
+    var selectedImage by remember { mutableStateOf<ByteArray?>(null) }
 
     val picker = rememberImagePicker { bytes ->
         if (bytes != null) {
-            selectedImage = CookLogImage.Bitmap(bytes)
+            selectedImage = bytes
         }
     }
 
@@ -323,18 +313,15 @@ fun AddCatalogDialog(
                     ) {
                         Text(stringResource(Res.string.gallery), color = MaterialTheme.colorScheme.onSecondary)
                     }
-
-                    OutlinedButton(
-                        onClick = { selectedImage = CookLogImage.Resource(Res.drawable.default) },
-                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
-                    ) {
-                        Text(stringResource(Res.string.default), color = MaterialTheme.colorScheme.primary)
-                    }
                 }
 
                 when (val image = selectedImage) {
-                    is CookLogImage.Bitmap -> {
-                        val bitmap = remember(image.data) { image.data.decodeToImageBitmap() }
+                    null -> Text(
+                        stringResource(Res.string.no_image_selected),
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                    else -> {
+                        val bitmap = remember(image) { image.decodeToImageBitmap() }
                         Image(
                             bitmap = bitmap,
                             contentDescription = null,
@@ -343,19 +330,7 @@ fun AddCatalogDialog(
                         )
                     }
 
-                    is CookLogImage.Resource -> {
-                        Image(
-                            painter = painterResource(image.res),
-                            contentDescription = null,
-                            modifier = Modifier.size(100.dp).clip(RoundedCornerShape(8.dp)),
-                            contentScale = ContentScale.Crop
-                        )
-                    }
 
-                    null -> Text(
-                        stringResource(Res.string.no_image_selected),
-                        style = MaterialTheme.typography.bodySmall
-                    )
                 }
             }
         },
@@ -411,4 +386,25 @@ fun DeleteDialog(
             }
         }
     )
+}
+
+@Composable
+fun recipePainter(imageData: ByteArray?): Painter {
+    val defaultPainter = painterResource(Res.drawable.default)
+
+    if (imageData == null || imageData.isEmpty()) return defaultPainter
+
+    val bitmap = remember(imageData) {
+        try {
+            imageData.decodeToImageBitmap()
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    return if (bitmap != null) {
+        remember(bitmap) { BitmapPainter(bitmap) }
+    } else {
+        defaultPainter
+    }
 }

@@ -63,7 +63,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.saharapps.common.model.CookLogImage
 import com.saharapps.common.model.RecipeItem
 import com.saharapps.ui.theme.LightColorScheme
 import cooklog.feature.recipe_list.generated.resources.Res
@@ -248,14 +247,24 @@ fun RecipeHorizontalCard(
     onLongClick: (Long) -> Unit,
     onFavoriteClick: () -> Unit
 ) {
-    val firstImage = item.images.firstOrNull() ?: CookLogImage.Resource(Res.drawable.default)
+    val imageData = item.images?.firstOrNull()
 
-    val painter = when (firstImage) {
-        is CookLogImage.Resource -> painterResource(firstImage.res)
-        is CookLogImage.Bitmap -> {
-            val bitmap = remember(firstImage.data) { firstImage.data.decodeToImageBitmap() }
-            remember(bitmap) { BitmapPainter(bitmap) }
+    val painter = if (imageData != null && imageData.isNotEmpty()) {
+        val bitmap = remember(imageData) {
+            try {
+                imageData.decodeToImageBitmap()
+            } catch (e: Exception) {
+                null
+            }
         }
+
+        if (bitmap != null) {
+            remember(bitmap) { BitmapPainter(bitmap) }
+        } else {
+            painterResource(Res.drawable.default)
+        }
+    } else {
+        painterResource(Res.drawable.default)
     }
 
     Card(
@@ -282,7 +291,7 @@ fun RecipeHorizontalCard(
             Box(modifier = Modifier.width(120.dp).fillMaxHeight()) {
                 Image(
                     painter = painter,
-                    contentDescription = null,
+                    contentDescription = "Recipe Image",
                     contentScale = ContentScale.Crop,
                     modifier = Modifier.fillMaxSize()
                 )

@@ -47,12 +47,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.saharapps.common.model.CookLogImage
 import com.saharapps.common.model.RecipeItem
 import com.saharapps.common.rememberImageListPicker
 import com.saharapps.recipe.ui.component.RecipeImageRenderer
 import com.saharapps.ui.theme.LightColorScheme
 import cooklog.feature.recipe.generated.resources.Res
+import cooklog.feature.recipe.generated.resources.add
 import cooklog.feature.recipe.generated.resources.close
 import cooklog.feature.recipe.generated.resources.cook_time_minutes
 import cooklog.feature.recipe.generated.resources.create
@@ -78,11 +78,11 @@ fun RecipeEditScreen(
     var explanation by rememberSaveable { mutableStateOf("") }
     var isFavorite by rememberSaveable { mutableStateOf(false) }
     var cookTime by rememberSaveable { mutableStateOf("") }
-    val selectedImages = rememberSaveable { mutableStateListOf<CookLogImage>() }
+    val selectedImages = rememberSaveable { mutableStateListOf<ByteArray>() }
 
     val imagePicker = rememberImageListPicker { bytes ->
         if (bytes != null) {
-            selectedImages.add(CookLogImage.Bitmap(bytes))
+            selectedImages.add(bytes)
         }
     }
 
@@ -99,7 +99,7 @@ fun RecipeEditScreen(
             isFavorite = recipe.isFavorite
             cookTime = recipe.cookTime.toString()
             selectedImages.clear()
-            selectedImages.addAll(recipe.images)
+            recipe.images?.let { selectedImages.addAll(it) }
         }
     }
 
@@ -193,7 +193,7 @@ fun RecipeEditScreen(
                                     tint = MaterialTheme.colorScheme.primary
                                 )
                                 Text(
-                                    text = "Add",
+                                    text = stringResource(Res.string.add),
                                     style = MaterialTheme.typography.labelSmall,
                                     color = MaterialTheme.colorScheme.primary
                                 )
