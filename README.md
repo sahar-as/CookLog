@@ -1,4 +1,4 @@
-# CookLog
+# CookLog CMP Project for Android & iOS
 
 <img width="2752" height="1536" alt="cooklog_github_banner" src="https://github.com/user-attachments/assets/ddca9d46-9356-4f6e-ba04-9228d2d3833e" />
 
