@@ -25,6 +25,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -55,6 +56,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.saharapps.catalog.CatalogItem
@@ -175,9 +177,8 @@ fun CatalogScreen(
         ) { innerPadding ->
             when (catalogUiState.viewStatus) {
                 ViewStatus.INITIAL -> {}
-                ViewStatus.LOADING -> {
-                    //todo should show Shimmer
-                }
+
+                ViewStatus.LOADING -> LoadingUi(Modifier)
 
                 ViewStatus.SUCCESS -> {
                     CatalogGrid(
@@ -189,7 +190,12 @@ fun CatalogScreen(
                 }
 
                 ViewStatus.FAILED -> {
-                    //todo should show failed screen
+                    FailedUi(
+                        Modifier,
+                        onClickTryAgain = {
+                            viewModel.getCatalogs()
+                        }
+                    )
                 }
             }
         }
@@ -311,7 +317,10 @@ fun AddCatalogDialog(
                             containerColor = MaterialTheme.colorScheme.secondary
                         )
                     ) {
-                        Text(stringResource(Res.string.gallery), color = MaterialTheme.colorScheme.onSecondary)
+                        Text(
+                            stringResource(Res.string.gallery),
+                            color = MaterialTheme.colorScheme.onSecondary
+                        )
                     }
                 }
 
@@ -320,6 +329,7 @@ fun AddCatalogDialog(
                         stringResource(Res.string.no_image_selected),
                         style = MaterialTheme.typography.bodySmall
                     )
+
                     else -> {
                         val bitmap = remember(image) { image.decodeToImageBitmap() }
                         Image(
@@ -341,7 +351,12 @@ fun AddCatalogDialog(
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.secondary
                 )
-            ) { Text(stringResource(Res.string.create), color = MaterialTheme.colorScheme.onSecondary) }
+            ) {
+                Text(
+                    stringResource(Res.string.create),
+                    color = MaterialTheme.colorScheme.onSecondary
+                )
+            }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
@@ -406,5 +421,82 @@ fun recipePainter(imageData: ByteArray?): Painter {
         remember(bitmap) { BitmapPainter(bitmap) }
     } else {
         defaultPainter
+    }
+}
+
+@Composable
+fun LoadingUi(modifier: Modifier) {
+    Box(
+        modifier = modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        CircularProgressIndicator(
+            modifier = modifier.size(50.dp),
+            color = MaterialTheme.colorScheme.secondary,
+            strokeWidth = 6.dp
+        )
+    }
+}
+
+@Composable
+fun FailedUi(
+    modifier: Modifier,
+    onClickTryAgain: () -> Unit,
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.primaryContainer),
+        verticalArrangement = Arrangement.Center,
+    ) {
+        Row(
+            modifier = modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Text(
+                text = stringResource(Res.string.failed_to_load),
+                color = MaterialTheme.colorScheme.primary,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .padding(24.dp),
+                style = MaterialTheme.typography.titleLarge
+            )
+        }
+
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .aspectRatio(1f)
+                .padding(16.dp),
+            shape = RoundedCornerShape(16.dp),
+        ) {
+            Box(modifier = Modifier.fillMaxSize()) {
+                Image(
+                    painter = painterResource(Res.drawable.error),
+                    contentDescription = stringResource(Res.string.failed_to_load),
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
+        }
+
+        Row(
+            modifier = modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Button(
+                modifier = modifier.padding(24.dp),
+                onClick = { onClickTryAgain.invoke() },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.secondary
+                ),
+            ) {
+                Text(
+                    stringResource(Res.string.try_again),
+                    color = MaterialTheme.colorScheme.onSecondary,
+                    style = MaterialTheme.typography.bodyLarge
+                )
+            }
+        }
     }
 }

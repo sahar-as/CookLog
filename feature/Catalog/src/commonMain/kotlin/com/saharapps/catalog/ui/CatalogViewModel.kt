@@ -7,6 +7,7 @@ import com.saharapps.catalog.domain.DeleteCatalogUseCase
 import com.saharapps.catalog.domain.GetCatalogUseCase
 import com.saharapps.catalog.domain.SaveCatalogUseCase
 import com.saharapps.ui.ViewStatus
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -25,6 +26,7 @@ class CatalogViewModel(
             _catalogUiState.update {
                 it.copy(viewStatus = ViewStatus.LOADING)
             }
+            delay(500) // this is intentional to see CircularProgressIndicator
             val result = getCatalogUseCase.invoke()
             result.onSuccess { catalogs ->
                 _catalogUiState.update {

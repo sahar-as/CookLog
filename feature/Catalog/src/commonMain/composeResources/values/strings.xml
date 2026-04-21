@@ -12,4 +12,6 @@
     <string name="catalogs">Catalogs</string>
     <string name="create_new_entry">Create New Entry</string>
     <string name="no_image_selected">No image selected!</string>
+    <string name="failed_to_load">Oops! Something Unexpected Happen!</string>
+    <string name="try_again">Try Again</string>
 </resources>
