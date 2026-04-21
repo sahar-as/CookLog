@@ -271,7 +271,7 @@ fun CatalogCard(
 @Composable
 fun AddCatalogDialog(
     onDismiss: () -> Unit,
-    onConfirm: (String, ByteArray) -> Unit
+    onConfirm: (String, ByteArray?) -> Unit
 ) {
     var name by remember { mutableStateOf("") }
     var selectedImage by remember { mutableStateOf<ByteArray?>(null) }
@@ -325,19 +325,19 @@ fun AddCatalogDialog(
                         Image(
                             bitmap = bitmap,
                             contentDescription = null,
-                            modifier = Modifier.size(100.dp).clip(RoundedCornerShape(8.dp)),
+                            modifier = Modifier
+                                .size(100.dp)
+                                .clip(RoundedCornerShape(8.dp)),
                             contentScale = ContentScale.Crop
                         )
                     }
-
-
                 }
             }
         },
         confirmButton = {
             Button(
-                enabled = name.isNotBlank() && selectedImage != null,
-                onClick = { onConfirm(name, selectedImage!!) },
+                enabled = name.isNotBlank(),
+                onClick = { onConfirm(name, selectedImage) },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.secondary
                 )
