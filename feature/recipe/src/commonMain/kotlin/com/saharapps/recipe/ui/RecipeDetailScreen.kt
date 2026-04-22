@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -63,7 +64,12 @@ fun RecipeDetailScreen(
     }
 
     MaterialTheme(colorScheme = LightColorScheme) {
-        val pagerState = rememberPagerState(pageCount = { 1 }) // todo Replace '1' with images list size
+        val pagerState = rememberPagerState(
+            pageCount = {
+                val images = uiState.recipe?.images
+                if (images.isNullOrEmpty()) 1 else images.size
+            }
+        )
 
         Scaffold(
             containerColor = MaterialTheme.colorScheme.primaryContainer,
@@ -109,14 +115,7 @@ fun RecipeDetailScreen(
             }
         ) { innerPadding ->
             when (uiState.viewStatus) {
-                ViewStatus.INITIAL, ViewStatus.LOADING -> {
-                    Box(
-                        modifier = Modifier.fillMaxSize().padding(innerPadding),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
-                    }
-                }
+                ViewStatus.INITIAL, ViewStatus.LOADING -> LoadingUi(Modifier)
 
                 ViewStatus.SUCCESS -> {
                     uiState.recipe?.let { recipe ->
@@ -131,7 +130,11 @@ fun RecipeDetailScreen(
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 IconButton(onClick = onBack) {
-                                    Icon(Icons.Default.ArrowBack, null, tint = MaterialTheme.colorScheme.primary)
+                                    Icon(
+                                        Icons.Default.ArrowBack,
+                                        null,
+                                        tint = MaterialTheme.colorScheme.primary
+                                    )
                                 }
                                 Text(
                                     text = recipe.name,
@@ -160,12 +163,22 @@ fun RecipeDetailScreen(
                                 color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.1f)
                             ) {
                                 Row(
-                                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                                    modifier = Modifier.padding(
+                                        horizontal = 16.dp,
+                                        vertical = 8.dp
+                                    ),
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    Icon(Icons.Default.Timer, null, tint = MaterialTheme.colorScheme.secondary)
+                                    Icon(
+                                        Icons.Default.Timer,
+                                        null,
+                                        tint = MaterialTheme.colorScheme.secondary
+                                    )
                                     Spacer(Modifier.width(8.dp))
-                                    Text("Ready in 40 mins", color = MaterialTheme.colorScheme.secondary)
+                                    Text(
+                                        "Ready in 40 mins",
+                                        color = MaterialTheme.colorScheme.secondary
+                                    )
                                 }
                             }
 
@@ -199,5 +212,19 @@ fun RecipeDetailScreen(
                 }
             }
         }
+    }
+}
+
+@Composable
+fun LoadingUi(modifier: Modifier) {
+    Box(
+        modifier = modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        CircularProgressIndicator(
+            modifier = modifier.size(50.dp),
+            color = MaterialTheme.colorScheme.secondary,
+            strokeWidth = 6.dp
+        )
     }
 }

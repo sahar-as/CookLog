@@ -31,7 +31,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
+import cooklog.feature.recipe.generated.resources.Res
+import cooklog.feature.recipe.generated.resources.default
 import org.jetbrains.compose.resources.decodeToImageBitmap
+import org.jetbrains.compose.resources.painterResource
 
 @Composable
 fun RecipeImageRenderer(
@@ -60,20 +63,12 @@ fun RecipeImageRenderer(
                 contentScale = ContentScale.Crop
             )
         } else {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.LightGray.copy(alpha = 0.3f)),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-                Icon(
-                    imageVector = Icons.Default.BrokenImage,
-                    contentDescription = null,
-                    tint = Color.Gray,
-                    modifier = Modifier.size(48.dp)
-                )
-            }
+            Image(
+                painter = painterResource(Res.drawable.default),
+                contentDescription = "Default Image",
+                modifier = modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop
+            )
         }
     }
 }
