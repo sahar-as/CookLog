@@ -15,7 +15,7 @@ import com.saharapps.database.recipe.RecipeEntity
     version = 1
 )
 @ConstructedBy(CookLogDatabaseConstructor::class)
-@TypeConverters(ByteArrayListConverter::class)
+@TypeConverters(ByteArrayListConverter::class, IngredientConvertor::class)
 abstract class CookLogDatabase : RoomDatabase() {
     abstract fun catalogDao(): CatalogDao
     abstract fun recipeDao(): RecipeDao
