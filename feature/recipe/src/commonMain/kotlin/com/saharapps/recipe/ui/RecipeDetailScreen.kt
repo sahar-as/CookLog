@@ -179,8 +179,10 @@ fun RecipeDetailScreen(
                                     )
                                     Spacer(Modifier.width(8.dp))
                                     Text(
-                                        "Ready in 40 mins",
-                                        color = MaterialTheme.colorScheme.secondary
+                                        text = "Ready in ${recipe.cookTime ?: 0} mins",
+                                        color = MaterialTheme.colorScheme.secondary,
+                                        style = MaterialTheme.typography.bodyLarge,
+                                        fontWeight = FontWeight.Bold,
                                     )
                                 }
                             }
