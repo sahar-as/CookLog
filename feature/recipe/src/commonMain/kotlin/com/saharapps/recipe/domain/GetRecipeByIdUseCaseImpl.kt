@@ -28,7 +28,8 @@ class GetRecipeByIdUseCaseImpl(
                 images = images,
                 cookTime = cookTime,
                 isFavorite = isFavorite,
-                catalogId = catalogId
+                catalogId = catalogId,
+                ingredients = ingredients,
             )
 
         return recipeItem
