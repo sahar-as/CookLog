@@ -40,13 +40,16 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.saharapps.common.model.Ingredient
 import com.saharapps.recipe.ui.component.RecipeImageRenderer
 import com.saharapps.ui.ViewStatus
 import com.saharapps.ui.theme.LightColorScheme
 import cooklog.feature.recipe.generated.resources.Res
+import cooklog.feature.recipe.generated.resources.ingredients
 import cooklog.feature.recipe.generated.resources.recipe
 import org.jetbrains.compose.resources.stringResource
 
@@ -182,6 +185,20 @@ fun RecipeDetailScreen(
                                 }
                             }
 
+                            if (recipe.ingredients.isNotEmpty()) {
+                                Text(
+                                    text = stringResource(Res.string.ingredients),
+                                    modifier = Modifier.padding(start = 16.dp, top = 16.dp, bottom = 8.dp),
+                                    style = MaterialTheme.typography.titleLarge,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+
+                                recipe.ingredients.forEach { ingredient ->
+                                    IngredientItem(ingredient)
+                                }
+                                Spacer(modifier = Modifier.height(16.dp))
+                            }
+
                             Text(
                                 text = stringResource(Res.string.recipe),
                                 modifier = Modifier.padding(horizontal = 16.dp),
@@ -211,6 +228,39 @@ fun RecipeDetailScreen(
                     }
                 }
             }
+        }
+    }
+}
+
+@Composable
+fun IngredientItem(ingredient: Ingredient) {
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 4.dp),
+        shape = RoundedCornerShape(8.dp),
+        color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.1f)
+    ) {
+        Row(
+            modifier = Modifier.padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = ingredient.name,
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.padding(end = 16.dp).weight(0.7f),
+                maxLines = 1,
+            )
+
+            Text(
+                text = "${ingredient.amount} ${ingredient.unit}",
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.weight(0.3f),
+                maxLines = 1,
+            )
         }
     }
 }
