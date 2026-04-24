@@ -8,4 +8,5 @@ data class RecipeItem(
     val cookTime: Int? = 0,
     val isFavorite: Boolean = false,
     val catalogId: Long,
+    val ingredients: List<Ingredient> = emptyList(),
 )

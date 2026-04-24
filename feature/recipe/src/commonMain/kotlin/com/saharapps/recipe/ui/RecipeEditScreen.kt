@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -19,8 +20,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AddAPhoto
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -47,21 +50,27 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.saharapps.common.model.Ingredient
 import com.saharapps.common.model.RecipeItem
 import com.saharapps.common.rememberImageListPicker
 import com.saharapps.recipe.ui.component.RecipeImageRenderer
 import com.saharapps.ui.theme.LightColorScheme
 import cooklog.feature.recipe.generated.resources.Res
 import cooklog.feature.recipe.generated.resources.add
+import cooklog.feature.recipe.generated.resources.add_ingredient
 import cooklog.feature.recipe.generated.resources.close
 import cooklog.feature.recipe.generated.resources.cook_time_minutes
 import cooklog.feature.recipe.generated.resources.create
 import cooklog.feature.recipe.generated.resources.create_new_entry
 import cooklog.feature.recipe.generated.resources.edit_recipe
+import cooklog.feature.recipe.generated.resources.ingredient
+import cooklog.feature.recipe.generated.resources.ingredients
 import cooklog.feature.recipe.generated.resources.mins
 import cooklog.feature.recipe.generated.resources.name
+import cooklog.feature.recipe.generated.resources.quantity_abbreviation
 import cooklog.feature.recipe.generated.resources.recipe
 import cooklog.feature.recipe.generated.resources.recipe_images
+import cooklog.feature.recipe.generated.resources.unit
 import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -79,6 +88,7 @@ fun RecipeEditScreen(
     var isFavorite by rememberSaveable { mutableStateOf(false) }
     var cookTime by rememberSaveable { mutableStateOf("") }
     val selectedImages = rememberSaveable { mutableStateListOf<ByteArray>() }
+    val ingredients = rememberSaveable { mutableStateListOf<Ingredient>() }
 
     val imagePicker = rememberImageListPicker { bytes ->
         if (bytes != null) {
@@ -151,7 +161,10 @@ fun RecipeEditScreen(
                     )
                 )
 
-                Text(stringResource(Res.string.recipe_images), style = MaterialTheme.typography.titleSmall)
+                Text(
+                    stringResource(Res.string.recipe_images),
+                    style = MaterialTheme.typography.titleSmall
+                )
                 LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     items(selectedImages) { img ->
                         Box(modifier = Modifier.size(100.dp)) {
@@ -159,7 +172,7 @@ fun RecipeEditScreen(
                             IconButton(
                                 onClick = {
                                     selectedImages.remove(img)
-                                          },
+                                },
                                 modifier = Modifier
                                     .align(Alignment.TopEnd)
                                     .background(Color.Black.copy(0.4f), CircleShape)
@@ -216,6 +229,72 @@ fun RecipeEditScreen(
                     }
                 )
 
+                Text(
+                    stringResource(Res.string.ingredients),
+                    style = MaterialTheme.typography.titleSmall
+                )
+
+                ingredients.forEachIndexed { index, ingredient ->
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        OutlinedTextField(
+                            value = ingredient.name,
+                            onValueChange = {
+                                ingredients[index] = ingredients[index].copy(name = it)
+                            },
+                            modifier = Modifier.weight(0.5f),
+                            label = { Text(stringResource(Res.string.ingredient)) },
+                            singleLine = true,
+                            maxLines = 1
+                        )
+
+                        OutlinedTextField(
+                            value = ingredient.amount,
+                            onValueChange = {
+                                ingredients[index] = ingredients[index].copy(amount = it)
+                            },
+                            modifier = Modifier.weight(0.2f),
+                            label = { Text(stringResource(Res.string.quantity_abbreviation)) },
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                            singleLine = true,
+                            maxLines = 1
+                        )
+
+                        OutlinedTextField(
+                            value = ingredient.unit,
+                            onValueChange = {
+                                ingredients[index] = ingredients[index].copy(unit = it)
+                            },
+                            modifier = Modifier.weight(0.3f),
+                            label = { Text(stringResource(Res.string.unit)) },
+                            singleLine = true,
+                            maxLines = 1
+                        )
+
+                        IconButton(onClick = { ingredients.removeAt(index) }) {
+                            Icon(
+                                Icons.Default.Delete,
+                                null,
+                                tint = MaterialTheme.colorScheme.error
+                            )
+                        }
+                    }
+                }
+
+                Button(
+                    onClick = { ingredients.add(Ingredient()) },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Icon(
+                        Icons.Default.Add,
+                        null
+                    )
+                    Text(stringResource(Res.string.add_ingredient))
+                }
+
                 OutlinedTextField(
                     value = explanation,
                     onValueChange = { explanation = it },
@@ -236,7 +315,8 @@ fun RecipeEditScreen(
                             images = selectedImages.toList(),
                             cookTime = cookTime.toIntOrNull() ?: 0,
                             isFavorite = isFavorite,
-                            catalogId = catalogId
+                            catalogId = catalogId,
+                            ingredients = ingredients
                         )
                         viewModel.saveRecipe(recipeToSave)
                         onCancel()

@@ -18,4 +18,9 @@
     <string name="mins">mins</string>
     <string name="recipe_images">Recipe Images</string>
     <string name="add">Add</string>
+    <string name="ingredients">Ingredients</string>
+    <string name="ingredient">Ingredient</string>
+    <string name="quantity_abbreviation">Qty</string>
+    <string name="unit">Unit</string>
+    <string name="add_ingredient">Add Ingredient</string>
 </resources>
