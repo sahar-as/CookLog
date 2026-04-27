@@ -7,7 +7,9 @@ CookLog is a modern, cross-platform recipe management application built with the
 
 ## Features
 * Category Management: Organize recipes into custom categories, which are considered as a catalog screen with personalized images (Gallery or Defaults).
-* Recipe: the user can add different recipes to the recipe list of each catalog.
+* RecipeList: This is where the user can see the list of recipes and also can go to the Recipe Edit screen.
+* Recipe Edit: In This Screen, the user can write recipe information or edit a saved recipe.
+* Recipe Detail: The user can read the information of each recipe in this screen.
 * Smart Search: Quickly filter through your categories to find exactly what you're looking for.
 * Full CRUD Operations: Create, Read, Update, and Delete recipes with a dedicated Detail and Edit flow.
 * Modern UI: Built entirely with Jetpack Compose for a smooth, declarative interface across platforms.
