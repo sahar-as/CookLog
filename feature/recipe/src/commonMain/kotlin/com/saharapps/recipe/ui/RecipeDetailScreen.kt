@@ -58,7 +58,7 @@ fun RecipeDetailScreen(
     recipeId: Long,
     viewModel: RecipeDetailViewModel,
     onBack: () -> Unit,
-    onEdit: () -> Unit,
+    onEdit: (Long, Long) -> Unit,
     onDelete: () -> Unit,
 ) {
     val uiState by viewModel.recipeUiState.collectAsStateWithLifecycle()
@@ -107,7 +107,12 @@ fun RecipeDetailScreen(
                     },
                     floatingActionButton = {
                         FloatingActionButton(
-                            onClick = onEdit,
+                            onClick = {
+                                onEdit(
+                                    uiState.recipe?.catalogId ?: 0,
+                                    uiState.recipe?.id ?: 0,
+                                )
+                            },
                             containerColor = MaterialTheme.colorScheme.secondary,
                             contentColor = MaterialTheme.colorScheme.onSecondary
                         ) {
@@ -190,7 +195,11 @@ fun RecipeDetailScreen(
                             if (recipe.ingredients.isNotEmpty()) {
                                 Text(
                                     text = stringResource(Res.string.ingredients),
-                                    modifier = Modifier.padding(start = 16.dp, top = 16.dp, bottom = 8.dp),
+                                    modifier = Modifier.padding(
+                                        start = 16.dp,
+                                        top = 16.dp,
+                                        bottom = 8.dp
+                                    ),
                                     style = MaterialTheme.typography.titleLarge,
                                     color = MaterialTheme.colorScheme.primary
                                 )
