@@ -18,6 +18,6 @@ CookLog is a modern, cross-platform recipe management application built with the
 This project follows a clean, multi-module architecture to ensure separation of concerns and scalability.
 * UI: Compose Multiplatform (Android/iOS)
 * Dependency Injection: Koin
-* Local Database: Room 
+* Local Database: Room with three tables for saving catalogs, recipes, and recipe images
 * Build System: Convention Plugins (Build Logic) for centralized Gradle management.
 * Navigation: Compose Navigation.
