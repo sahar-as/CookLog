@@ -245,7 +245,11 @@ fun CatalogCard(
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
             Image(
-                rememberAsyncImagePainter(item.imagePath),
+                rememberAsyncImagePainter(
+                    model = item.imagePath,
+                    error = painterResource(Res.drawable.default),
+                    placeholder = painterResource(Res.drawable.default)
+                ),
                 contentDescription = item.name,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.fillMaxSize()
