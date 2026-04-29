@@ -8,5 +8,5 @@ data class CatalogEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
     val name: String,
-    val imageData: ByteArray?,
+    val imagePath: String?,
 )

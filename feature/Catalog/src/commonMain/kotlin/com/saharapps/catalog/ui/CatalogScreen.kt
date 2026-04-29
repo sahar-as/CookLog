@@ -53,12 +53,11 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.BitmapPainter
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil3.compose.rememberAsyncImagePainter
 import com.saharapps.catalog.CatalogItem
 import com.saharapps.common.rememberImagePicker
 import com.saharapps.ui.ViewStatus
@@ -66,7 +65,6 @@ import com.saharapps.ui.theme.LightColorScheme
 import cooklog.feature.catalog.generated.resources.Res
 import cooklog.feature.catalog.generated.resources.*
 import org.jetbrains.compose.resources.painterResource
-import org.jetbrains.compose.resources.decodeToImageBitmap
 import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -95,7 +93,7 @@ fun CatalogScreen(
             AddCatalogDialog(
                 onDismiss = { showAddDialog = false },
                 onConfirm = { name, imageSource ->
-                    val newCatalog = CatalogItem(name = name, image = imageSource)
+                    val newCatalog = CatalogItem(name = name, imagePath = imageSource)
                     viewModel.saveCatalog(newCatalog)
                     showAddDialog = false
                 }
@@ -235,8 +233,6 @@ fun CatalogCard(
     onClickCatalog: (Long) -> Unit,
     onLongClickCatalog: (CatalogItem) -> Unit
 ) {
-    val painter = recipePainter(item.image)
-
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -249,7 +245,7 @@ fun CatalogCard(
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
             Image(
-                painter = painter,
+                rememberAsyncImagePainter(item.imagePath),
                 contentDescription = item.name,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.fillMaxSize()
@@ -277,14 +273,14 @@ fun CatalogCard(
 @Composable
 fun AddCatalogDialog(
     onDismiss: () -> Unit,
-    onConfirm: (String, ByteArray?) -> Unit
+    onConfirm: (String, String?) -> Unit
 ) {
     var name by remember { mutableStateOf("") }
-    var selectedImage by remember { mutableStateOf<ByteArray?>(null) }
+    var selectedImage by remember { mutableStateOf<String?>(null) }
 
-    val picker = rememberImagePicker { bytes ->
-        if (bytes != null) {
-            selectedImage = bytes
+    val picker = rememberImagePicker { path ->
+        if (path != null) {
+            selectedImage = path
         }
     }
 
@@ -331,9 +327,8 @@ fun AddCatalogDialog(
                     )
 
                     else -> {
-                        val bitmap = remember(image) { image.decodeToImageBitmap() }
                         Image(
-                            bitmap = bitmap,
+                            painter = rememberAsyncImagePainter(image),
                             contentDescription = null,
                             modifier = Modifier
                                 .size(100.dp)
@@ -401,27 +396,6 @@ fun DeleteDialog(
             }
         }
     )
-}
-
-@Composable
-fun recipePainter(imageData: ByteArray?): Painter {
-    val defaultPainter = painterResource(Res.drawable.default)
-
-    if (imageData == null || imageData.isEmpty()) return defaultPainter
-
-    val bitmap = remember(imageData) {
-        try {
-            imageData.decodeToImageBitmap()
-        } catch (e: Exception) {
-            null
-        }
-    }
-
-    return if (bitmap != null) {
-        remember(bitmap) { BitmapPainter(bitmap) }
-    } else {
-        defaultPainter
-    }
 }
 
 @Composable

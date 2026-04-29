@@ -5,9 +5,8 @@ import androidx.compose.runtime.Composable
 interface ImagePicker {
     fun launch()
 }
+@Composable
+expect fun rememberImagePicker(onImagePicked: (String?) -> Unit): ImagePicker
 
 @Composable
-expect fun rememberImagePicker(onImagePicked: (ByteArray?) -> Unit): ImagePicker
-@Composable
-
-expect fun rememberImageListPicker(onImagePicked: (ByteArray?) -> Unit): ImagePicker
+expect fun rememberImageListPicker(onImagePicked: (String?) -> Unit): ImagePicker

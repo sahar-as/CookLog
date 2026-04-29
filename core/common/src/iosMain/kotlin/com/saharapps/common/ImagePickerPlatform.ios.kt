@@ -9,17 +9,18 @@ import platform.PhotosUI.PHPickerResult
 import platform.PhotosUI.PHPickerViewController
 import platform.PhotosUI.PHPickerViewControllerDelegateProtocol
 import platform.UIKit.UIApplication
-import platform.Foundation.NSData
 import platform.darwin.NSObject
-import kotlinx.cinterop.get
-import kotlinx.cinterop.reinterpret
-import kotlinx.cinterop.ByteVar
-import kotlinx.cinterop.refTo
-import platform.posix.memcpy
+import platform.Foundation.NSDate
+import platform.Foundation.NSDocumentDirectory
+import platform.Foundation.NSFileManager
+import platform.Foundation.NSSearchPathForDirectoriesInDomains
+import platform.Foundation.NSURL
+import platform.Foundation.NSUserDomainMask
+import platform.Foundation.timeIntervalSince1970
 
 @OptIn(ExperimentalForeignApi::class)
 @Composable
-actual fun rememberImagePicker(onImagePicked: (ByteArray?) -> Unit): ImagePicker {
+actual fun rememberImagePicker(onImagePicked: (String?) -> Unit): ImagePicker {
     val delegate = remember {
         object : NSObject(), PHPickerViewControllerDelegateProtocol {
             override fun picker(picker: PHPickerViewController, didFinishPicking: List<*>) {
@@ -31,26 +32,11 @@ actual fun rememberImagePicker(onImagePicked: (ByteArray?) -> Unit): ImagePicker
                     return
                 }
 
-                result.itemProvider.loadDataRepresentationForTypeIdentifier("public.image") { data, error ->
-                    if (data != null) {
-                        val nsData = data as NSData
-
-                        val length = nsData.length.toInt()
-                        val bytes = ByteArray(length)
-                        val pointer = nsData.bytes?.reinterpret<ByteVar>()
-
-                        if (pointer != null) {
-                            for (i in 0 until length) {
-                                bytes[i] = pointer[i]
-                            }
-                            onImagePicked(bytes)
-                        } else {
-                            onImagePicked(null)
-                        }
-                    } else {
-                        onImagePicked(null)
-                    }
+                result.itemProvider.loadFileRepresentationForTypeIdentifier("public.image") { url, error ->
+                    val savedPath = url?.let { copyToDocuments(it) }
+                    onImagePicked(savedPath)
                 }
+
                 picker.dismissViewControllerAnimated(true, null)
             }
         }
@@ -76,7 +62,7 @@ actual fun rememberImagePicker(onImagePicked: (ByteArray?) -> Unit): ImagePicker
 
 @OptIn(ExperimentalForeignApi::class)
 @Composable
-actual fun rememberImageListPicker(onImagePicked: (ByteArray?) -> Unit): ImagePicker {
+actual fun rememberImageListPicker(onImagePicked: (String?) -> Unit): ImagePicker {
     val delegate = remember {
         object : NSObject(), PHPickerViewControllerDelegateProtocol {
             override fun picker(picker: PHPickerViewController, didFinishPicking: List<*>) {
@@ -89,14 +75,9 @@ actual fun rememberImageListPicker(onImagePicked: (ByteArray?) -> Unit): ImagePi
                 }
 
                 results.forEach { result ->
-                    result.itemProvider.loadDataRepresentationForTypeIdentifier("public.image") { data, error ->
-                        if (data != null) {
-                            val nsData = data as NSData
-                            val bytes = ByteArray(nsData.length.toInt())
-
-                            memcpy(bytes.refTo(0), nsData.bytes, nsData.length)
-                            onImagePicked(bytes)
-                        }
+                    result.itemProvider.loadFileRepresentationForTypeIdentifier("public.image") { url, error ->
+                        val savedPath = url?.let { copyToDocuments(it) }
+                        onImagePicked(savedPath)
                     }
                 }
             }
@@ -119,4 +100,28 @@ actual fun rememberImageListPicker(onImagePicked: (ByteArray?) -> Unit): ImagePi
             }
         }
     }
+}
+
+@OptIn(ExperimentalForeignApi::class)
+private fun copyToDocuments(tempUrl: NSURL): String? {
+    val fileName = "img_${NSDate().timeIntervalSince1970.toLong()}.jpg"
+
+    val docsDir = NSSearchPathForDirectoriesInDomains(
+        NSDocumentDirectory,
+        NSUserDomainMask,
+        true
+    ).firstOrNull() as? String ?: return null
+
+    val destPath = "$docsDir/$fileName"
+    val destURL = NSURL.fileURLWithPath(destPath)
+
+    val fileManager = NSFileManager.defaultManager
+
+    if (fileManager.fileExistsAtPath(destPath)) {
+        fileManager.removeItemAtPath(destPath, error = null)
+    }
+
+    val copied = fileManager.copyItemAtURL(tempUrl, toURL = destURL, error = null)
+
+    return if (copied) destPath else null
 }

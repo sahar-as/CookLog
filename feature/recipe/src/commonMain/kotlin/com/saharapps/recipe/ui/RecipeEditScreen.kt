@@ -87,7 +87,7 @@ fun RecipeEditScreen(
     var explanation by rememberSaveable { mutableStateOf("") }
     var isFavorite by rememberSaveable { mutableStateOf(false) }
     var cookTime by rememberSaveable { mutableStateOf("") }
-    val selectedImages = rememberSaveable { mutableStateListOf<ByteArray>() }
+    val selectedImages = rememberSaveable { mutableStateListOf<String>() }
     val ingredients = rememberSaveable { mutableStateListOf<Ingredient>() }
 
     val imagePicker = rememberImageListPicker { bytes ->

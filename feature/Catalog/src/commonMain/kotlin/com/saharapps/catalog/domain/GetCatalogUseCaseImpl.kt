@@ -21,12 +21,10 @@ internal class GetCatalogUseCaseImpl(
 
     private fun List<CatalogEntity>.toCatalogItems(): List<CatalogItem> {
         val catalogItems = this.map { entity ->
-            val image = entity.imageData ?: byteArrayOf()
-
             CatalogItem(
                 id = entity.id,
                 name = entity.name,
-                image = image
+                imagePath = entity.imagePath
             )
         }
         return catalogItems

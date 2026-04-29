@@ -17,7 +17,7 @@ internal class SaveCatalogUseCaseImpl(
         return CatalogEntity(
             id = this.id,
             name = this.name,
-            imageData = this.image,
+            imagePath = this.imagePath,
         )
     }
 }

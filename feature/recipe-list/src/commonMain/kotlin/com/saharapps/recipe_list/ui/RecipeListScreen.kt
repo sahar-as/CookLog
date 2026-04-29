@@ -57,12 +57,11 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.decodeToImageBitmap
-import androidx.compose.ui.graphics.painter.BitmapPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil3.compose.rememberAsyncImagePainter
 import com.saharapps.common.model.RecipeItem
 import com.saharapps.ui.theme.LightColorScheme
 import cooklog.feature.recipe_list.generated.resources.Res
@@ -247,22 +246,10 @@ fun RecipeHorizontalCard(
     onLongClick: (Long) -> Unit,
     onFavoriteClick: () -> Unit
 ) {
-    val imageData = item.images?.firstOrNull()
+    val imagePath = item.images?.firstOrNull()
 
-    val painter = if (imageData != null && imageData.isNotEmpty()) {
-        val bitmap = remember(imageData) {
-            try {
-                imageData.decodeToImageBitmap()
-            } catch (e: Exception) {
-                null
-            }
-        }
-
-        if (bitmap != null) {
-            remember(bitmap) { BitmapPainter(bitmap) }
-        } else {
-            painterResource(Res.drawable.default)
-        }
+    val painter = if (!imagePath.isNullOrEmpty()) {
+        rememberAsyncImagePainter(imagePath)
     } else {
         painterResource(Res.drawable.default)
     }
