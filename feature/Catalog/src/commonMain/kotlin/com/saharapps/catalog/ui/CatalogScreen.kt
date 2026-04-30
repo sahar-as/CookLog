@@ -45,6 +45,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -79,10 +80,10 @@ fun CatalogScreen(
     }
 
     var catalogToDelete by remember { mutableStateOf<CatalogItem?>(null) }
-    var isSearchExpanded by remember { mutableStateOf(false) }
-    var searchQuery by remember { mutableStateOf("") }
+    var isSearchExpanded by rememberSaveable { mutableStateOf(false) }
+    var searchQuery by rememberSaveable { mutableStateOf("") }
     val focusRequester = remember { FocusRequester() }
-    var showAddDialog by remember { mutableStateOf(false) }
+    var showAddDialog by rememberSaveable { mutableStateOf(false) }
 
     val filteredRecipes = catalogUiState.catalogs.filter {
         it.name.contains(searchQuery, ignoreCase = true)
@@ -92,8 +93,8 @@ fun CatalogScreen(
         if (showAddDialog) {
             AddCatalogDialog(
                 onDismiss = { showAddDialog = false },
-                onConfirm = { name, imageSource ->
-                    val newCatalog = CatalogItem(name = name, imagePath = imageSource)
+                onConfirm = { name, imagePath ->
+                    val newCatalog = CatalogItem(name = name, imagePath = imagePath)
                     viewModel.saveCatalog(newCatalog)
                     showAddDialog = false
                 }
@@ -279,8 +280,8 @@ fun AddCatalogDialog(
     onDismiss: () -> Unit,
     onConfirm: (String, String?) -> Unit
 ) {
-    var name by remember { mutableStateOf("") }
-    var selectedImage by remember { mutableStateOf<String?>(null) }
+    var name by rememberSaveable { mutableStateOf("") }
+    var selectedImage by rememberSaveable { mutableStateOf<String?>(null) }
 
     val picker = rememberImagePicker { path ->
         if (path != null) {
