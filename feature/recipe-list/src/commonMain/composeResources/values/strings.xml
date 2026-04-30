@@ -12,4 +12,5 @@
     <string name="recipes">Recipes</string>
     <string name="create_new_entry">Create New Entry</string>
     <string name="no_image_selected">No image selected!</string>
+    <string name="recipe_image">Recipe Image</string>
 </resources>

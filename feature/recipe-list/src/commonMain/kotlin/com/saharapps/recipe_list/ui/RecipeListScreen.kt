@@ -49,6 +49,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -67,6 +68,8 @@ import com.saharapps.ui.theme.LightColorScheme
 import cooklog.feature.recipe_list.generated.resources.Res
 import cooklog.feature.recipe_list.generated.resources.cancel
 import cooklog.feature.recipe_list.generated.resources.default
+import cooklog.feature.recipe_list.generated.resources.empty
+import cooklog.feature.recipe_list.generated.resources.recipe_image
 import cooklog.feature.recipe_list.generated.resources.recipes
 import cooklog.feature.recipe_list.generated.resources.search
 import org.jetbrains.compose.resources.painterResource
@@ -82,10 +85,10 @@ fun RecipeListScreen(
     onClickAddRecipe: (Long, Long?) -> Unit
 ) {
     val uiState by viewModel.recipeListUiState.collectAsStateWithLifecycle()
-    var isSearchExpanded by remember { mutableStateOf(false) }
-    var searchQuery by remember { mutableStateOf("") }
+    var isSearchExpanded by rememberSaveable { mutableStateOf(false) }
+    var searchQuery by rememberSaveable { mutableStateOf("") }
     val focusRequester = remember { FocusRequester() }
-    var selectedIds by remember { mutableStateOf(setOf<Long>()) }
+    var selectedIds by rememberSaveable { mutableStateOf(setOf<Long>()) }
     val isSelectionMode = selectedIds.isNotEmpty()
 
     LaunchedEffect(isSearchExpanded) {
@@ -123,7 +126,7 @@ fun RecipeListScreen(
                             }
                         }
                     )
-                }else{
+                } else {
                     TopAppBar(
                         colors = TopAppBarDefaults.topAppBarColors(
                             containerColor = MaterialTheme.colorScheme.primary,
@@ -146,7 +149,8 @@ fun RecipeListScreen(
                                 TextField(
                                     value = searchQuery,
                                     onValueChange = { searchQuery = it },
-                                    modifier = Modifier.fillMaxWidth().focusRequester(focusRequester),
+                                    modifier = Modifier.fillMaxWidth()
+                                        .focusRequester(focusRequester),
                                     placeholder = {
                                         Text(
                                             stringResource(Res.string.search),
@@ -191,6 +195,10 @@ fun RecipeListScreen(
                 }
             }
         ) { innerPadding ->
+            if(filteredRecipes.isEmpty()){
+                ShowEmptyState()
+                return@Scaffold
+            }
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
@@ -211,7 +219,8 @@ fun RecipeListScreen(
                             isSelected = isSelected,
                             onClick = { id ->
                                 if (isSelectionMode) {
-                                    selectedIds = if (isSelected) selectedIds - id else selectedIds + id
+                                    selectedIds =
+                                        if (isSelected) selectedIds - id else selectedIds + id
                                 } else {
                                     onRecipeClick(id)
                                 }
@@ -236,6 +245,24 @@ fun RecipeListScreen(
         }
     }
 }
+
+@Composable
+fun ShowEmptyState(){
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        Image(
+            painter = painterResource(Res.drawable.empty),
+            contentDescription = null,
+            modifier = Modifier
+                .size(500.dp)
+                .clip(RoundedCornerShape(16.dp)),
+            contentScale = ContentScale.Crop
+        )
+    }
+}
+
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -278,7 +305,7 @@ fun RecipeHorizontalCard(
             Box(modifier = Modifier.width(120.dp).fillMaxHeight()) {
                 Image(
                     painter = painter,
-                    contentDescription = "Recipe Image",
+                    contentDescription = stringResource(Res.string.recipe_image) ,
                     contentScale = ContentScale.Crop,
                     modifier = Modifier.fillMaxSize()
                 )

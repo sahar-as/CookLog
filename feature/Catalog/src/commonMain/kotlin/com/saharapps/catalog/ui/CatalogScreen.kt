@@ -58,6 +58,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil3.Image
 import coil3.compose.rememberAsyncImagePainter
 import com.saharapps.catalog.CatalogItem
 import com.saharapps.common.rememberImagePicker
@@ -180,12 +181,16 @@ fun CatalogScreen(
                 ViewStatus.LOADING -> LoadingUi(Modifier)
 
                 ViewStatus.SUCCESS -> {
-                    CatalogGrid(
-                        padding = innerPadding,
-                        recipes = filteredRecipes,
-                        onClickCatalog = onClickCatalog,
-                        onLongClickCatalog = { item -> catalogToDelete = item }
-                    )
+                    if (filteredRecipes.isEmpty()) {
+                        ShowEmptyState()
+                    } else {
+                        CatalogGrid(
+                            padding = innerPadding,
+                            recipes = filteredRecipes,
+                            onClickCatalog = onClickCatalog,
+                            onLongClickCatalog = { item -> catalogToDelete = item }
+                        )
+                    }
                 }
 
                 ViewStatus.FAILED -> {
@@ -198,6 +203,23 @@ fun CatalogScreen(
                 }
             }
         }
+    }
+}
+
+@Composable
+fun ShowEmptyState(){
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        Image(
+            painter = painterResource(Res.drawable.empty),
+            contentDescription = null,
+            modifier = Modifier
+                .size(500.dp)
+                .clip(RoundedCornerShape(16.dp)),
+            contentScale = ContentScale.Crop
+        )
     }
 }
 
