@@ -9,6 +9,7 @@
     <string name="add_item">Add Item</string>
     <string name="recipe">Recipe</string>
     <string name="create">Create</string>
+    <string name="edit">Edit</string>
     <string name="create_new_entry">Create New Recipe</string>
     <string name="edit_recipe">Edit Recipe</string>
     <string name="no_image_selected">No image selected!</string>

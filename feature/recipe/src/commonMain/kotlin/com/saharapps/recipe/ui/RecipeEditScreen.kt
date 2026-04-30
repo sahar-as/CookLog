@@ -62,6 +62,7 @@ import cooklog.feature.recipe.generated.resources.close
 import cooklog.feature.recipe.generated.resources.cook_time_minutes
 import cooklog.feature.recipe.generated.resources.create
 import cooklog.feature.recipe.generated.resources.create_new_entry
+import cooklog.feature.recipe.generated.resources.edit
 import cooklog.feature.recipe.generated.resources.edit_recipe
 import cooklog.feature.recipe.generated.resources.ingredient
 import cooklog.feature.recipe.generated.resources.ingredients
@@ -110,6 +111,8 @@ fun RecipeEditScreen(
             cookTime = recipe.cookTime.toString()
             selectedImages.clear()
             recipe.images?.let { selectedImages.addAll(it) }
+            ingredients.clear()
+            ingredients.addAll(recipe.ingredients)
         }
     }
 
@@ -326,7 +329,10 @@ fun RecipeEditScreen(
                     shape = RoundedCornerShape(12.dp)
                 ) {
                     Text(
-                        stringResource(Res.string.create),
+                        if (recipeId == null)
+                            stringResource(Res.string.create)
+                        else
+                            stringResource(Res.string.edit),
                         color = MaterialTheme.colorScheme.onSecondary
                     )
                 }
