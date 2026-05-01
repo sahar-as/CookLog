@@ -13,4 +13,6 @@
     <string name="create_new_entry">Create New Entry</string>
     <string name="no_image_selected">No image selected!</string>
     <string name="recipe_image">Recipe Image</string>
+    <string name="empty_state_title">List of Recipes are Empty</string>
+    <string name="empty_state_text">Ready to cook? \n Start adding your favorite recipes</string>
 </resources>

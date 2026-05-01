@@ -73,6 +73,8 @@ import cooklog.feature.recipe_list.generated.resources.Res
 import cooklog.feature.recipe_list.generated.resources.cancel
 import cooklog.feature.recipe_list.generated.resources.default
 import cooklog.feature.recipe_list.generated.resources.empty
+import cooklog.feature.recipe_list.generated.resources.empty_state_text
+import cooklog.feature.recipe_list.generated.resources.empty_state_title
 import cooklog.feature.recipe_list.generated.resources.recipe_image
 import cooklog.feature.recipe_list.generated.resources.recipes
 import cooklog.feature.recipe_list.generated.resources.search
@@ -259,7 +261,7 @@ fun ShowEmptyState() {
         verticalArrangement = Arrangement.Center
     ) {
         Text(
-            text = "List of Recipes are Empty",
+            text = stringResource(Res.string.empty_state_title),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 8.dp, vertical = 8.dp)
@@ -271,7 +273,7 @@ fun ShowEmptyState() {
         )
 
         Text(
-            text = "Ready to cook? \n Start adding your favorite recipes",
+            text = stringResource(Res.string.empty_state_text),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 8.dp, vertical = 8.dp)

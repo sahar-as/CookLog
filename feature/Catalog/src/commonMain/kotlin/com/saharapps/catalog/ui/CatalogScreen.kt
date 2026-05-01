@@ -219,7 +219,7 @@ fun ShowEmptyState() {
         verticalArrangement = Arrangement.Center
     ) {
         Text(
-            text = "Catalog is Empty",
+            text = stringResource(Res.string.empty_state_title),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 8.dp, vertical = 8.dp)
@@ -231,7 +231,7 @@ fun ShowEmptyState() {
         )
 
         Text(
-            text = "Ready to start your culinary journey? \n Start adding your favorite Catalogs",
+            text = stringResource(Res.string.empty_state_text),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 8.dp, vertical = 8.dp)

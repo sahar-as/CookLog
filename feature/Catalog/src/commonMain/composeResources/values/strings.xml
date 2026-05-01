@@ -14,4 +14,6 @@
     <string name="no_image_selected">No image selected!</string>
     <string name="failed_to_load">Oops! Something Unexpected Happen!</string>
     <string name="try_again">Try Again</string>
+    <string name="empty_state_title">Catalog is Empty</string>
+    <string name="empty_state_text">Ready to start your culinary journey? \n Start adding your favorite Catalogs</string>
 </resources>
