@@ -12,15 +12,14 @@ Android (Jetpack Compose + CMP)<br/>
 iOS (Jetpack Compose + CMP)<br/>
 <br/><img width="1029" height="569" alt="Screenshot 2026-05-01 at 12 20 34" src="https://github.com/user-attachments/assets/13d84a27-6ed3-41f0-9449-511ea393c68f" />
 
-
 ## Features
-* Category Management: Organize recipes into custom categories, which are considered as a catalog screen with personalized images (Gallery or Defaults).
-* RecipeList: This is where the user can see the list of recipes and also can go to the Recipe Edit screen.
-* Recipe Edit: In This Screen, the user can write recipe information or edit a saved recipe.
-* Recipe Detail: The user can read the information of each recipe in this screen.
-* Smart Search: Quickly filter through your categories to find exactly what you're looking for.
-* Full CRUD Operations: Create, Read, Update, and Delete recipes with a dedicated Detail and Edit flow.
-* Modern UI: Built entirely with Jetpack Compose for a smooth, declarative interface across platforms.
+* Customizable Catalog Management: Organize your culinary collection. Create custom categories and personalize your catalog with gallery images or with defaults.
+* Recipe Dashboard: A clean, responsive list view that allows you to jump straight into editing or viewing your saved recipes.
+* Recipe Editor: A streamlined, modern editor that supports full recipe metadata, ingredient management, and rich text explanations.
+* Detail View: A dedicated view for your recipes, keeping your focus on the cooking process.
+* Search & Filtering: Never lose track of a recipe. Use search to filter through categories and recipe names in real-time.
+* CRUD Operations: Full support for creating, reading, updating, and deleting recipes.
+* Modern UI: Built entirely with Compose Multiplatform, ensuring a native, high-performance UI experience on both Android and iOS from a single codebase.
 
 ## Tech Stack & Architecture
 This project follows a clean, multi-module architecture to ensure separation of concerns and scalability.
