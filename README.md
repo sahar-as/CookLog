@@ -22,9 +22,10 @@ iOS (Jetpack Compose + CMP)<br/>
 * Modern UI: Built entirely with Compose Multiplatform, ensuring a native, high-performance UI experience on both Android and iOS from a single codebase.
 
 ## Tech Stack & Architecture
-This project follows a clean, multi-module architecture to ensure separation of concerns and scalability.
-* UI: Compose Multiplatform (Android/iOS)
-* Dependency Injection: Koin
-* Local Database: Room with three tables for saving catalogs, recipes, and recipe images
-* Build System: Convention Plugins (Build Logic) for centralized Gradle management.
+This project is built using Clean Architecture principles and a multi-module approach, ensuring a modular codebase that is highly testable, scalable, and easy to maintain.
+* UI: Compose Multiplatform (Sharing 100% of the UI code between Android and iOS)
+* Dependency Injection: Koin (Lightweight and native-Kotlin friendly, perfect for multiplatform projects)
+* Local Storage: Room with two tables for saving catalogs, recipes
+* Build System: Gradle Convention Plugins (Centralizing build logic to ensure consistent configurations across all modules)
 * Navigation: Compose Navigation.
+
