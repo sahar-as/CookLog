@@ -180,10 +180,8 @@ fun CatalogScreen(
             }
         ) { innerPadding ->
             when (catalogUiState.viewStatus) {
-                ViewStatus.INITIAL -> {}
-
+                ViewStatus.INITIAL -> Unit
                 ViewStatus.LOADING -> LoadingUi(Modifier)
-
                 ViewStatus.SUCCESS -> {
                     if (filteredRecipes.isEmpty()) {
                         ShowEmptyState()
@@ -200,9 +198,7 @@ fun CatalogScreen(
                 ViewStatus.FAILED -> {
                     FailedUi(
                         Modifier,
-                        onClickTryAgain = {
-                            viewModel.getCatalogs()
-                        }
+                        onClickTryAgain = { viewModel.getCatalogs() }
                     )
                 }
             }
