@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -32,8 +33,11 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -68,6 +72,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.rememberAsyncImagePainter
 import com.saharapps.common.model.RecipeItem
+import com.saharapps.ui.ViewStatus
 import com.saharapps.ui.theme.LightColorScheme
 import cooklog.feature.recipe_list.generated.resources.Res
 import cooklog.feature.recipe_list.generated.resources.cancel
@@ -75,9 +80,12 @@ import cooklog.feature.recipe_list.generated.resources.default
 import cooklog.feature.recipe_list.generated.resources.empty
 import cooklog.feature.recipe_list.generated.resources.empty_state_text
 import cooklog.feature.recipe_list.generated.resources.empty_state_title
+import cooklog.feature.recipe_list.generated.resources.error
+import cooklog.feature.recipe_list.generated.resources.failed_to_load
 import cooklog.feature.recipe_list.generated.resources.recipe_image
 import cooklog.feature.recipe_list.generated.resources.recipes
 import cooklog.feature.recipe_list.generated.resources.search
+import cooklog.feature.recipe_list.generated.resources.try_again
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -201,52 +209,94 @@ fun RecipeListScreen(
                 }
             }
         ) { innerPadding ->
-            if(filteredRecipes.isEmpty()){
-                ShowEmptyState()
-                return@Scaffold
-            }
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding)
-                    .background(MaterialTheme.colorScheme.primaryContainer),
-                contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                items(
-                    items = filteredRecipes,
-                    key = { it.id }
-                ) { recipe ->
-                    val isSelected = selectedIds.contains(recipe.id)
-
-                    Box(modifier = Modifier.fillMaxWidth()) {
-                        RecipeHorizontalCard(
-                            item = recipe,
-                            isSelected = isSelected,
-                            onClick = { id ->
-                                if (isSelectionMode) {
-                                    selectedIds =
-                                        if (isSelected) selectedIds - id else selectedIds + id
-                                } else {
-                                    onRecipeClick(id)
-                                }
-                            },
-                            onLongClick = { id ->
-                                if (!isSelectionMode) {
-                                    selectedIds = selectedIds + id
-                                }
-                            },
-                            onFavoriteClick = {
-                                if (!isSelectionMode) {
-                                    viewModel.updateFavoriteState(
-                                        recipeId = recipe.id,
-                                        isFavorite = !recipe.isFavorite
-                                    )
-                                }
-                            }
-                        )
-                    }
+            when (uiState.viewStatus) {
+                ViewStatus.INITIAL -> Unit
+                ViewStatus.LOADING -> LoadingUi(Modifier)
+                ViewStatus.SUCCESS -> {
+                    RecipeListContent(
+                        recipes = filteredRecipes,
+                        selectedIds = selectedIds,
+                        isSelectionMode = isSelectionMode,
+                        onRecipeClick = onRecipeClick,
+                        onRecipeLongClick = { id ->
+                            selectedIds =
+                                if (selectedIds.contains(id)) selectedIds - id else selectedIds + id
+                        },
+                        onFavoriteClick = { id, isFavorite ->
+                            viewModel.updateFavoriteState(id, isFavorite)
+                        },
+                        modifier = Modifier.padding(innerPadding)
+                    )
                 }
+
+                ViewStatus.FAILED -> {
+                    FailedUi(
+                        Modifier,
+                        onClickTryAgain = { viewModel.getRecipesByCatalog(catalogId) }
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun LoadingUi(modifier: Modifier) {
+    Box(
+        modifier = modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        CircularProgressIndicator(
+            modifier = modifier.size(50.dp),
+            color = MaterialTheme.colorScheme.secondary,
+            strokeWidth = 6.dp
+        )
+    }
+}
+
+@Composable
+fun RecipeListContent(
+    recipes: List<RecipeItem>,
+    selectedIds: Set<Long>,
+    isSelectionMode: Boolean,
+    onRecipeClick: (Long) -> Unit,
+    onRecipeLongClick: (Long) -> Unit,
+    onFavoriteClick: (Long, Boolean) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    if (recipes.isEmpty()) {
+        ShowEmptyState()
+    } else {
+        LazyColumn(
+            modifier = modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.primaryContainer),
+            contentPadding = PaddingValues(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            items(
+                items = recipes,
+                key = { it.id }
+            ) { recipe ->
+                val isSelected = selectedIds.contains(recipe.id)
+
+                RecipeHorizontalCard(
+                    item = recipe,
+                    isSelected = isSelected,
+                    onClick = { id ->
+                        if (isSelectionMode) {
+                            onRecipeLongClick(id)
+                        } else {
+                            onRecipeClick(id)
+                        }
+                    },
+                    onLongClick = onRecipeLongClick,
+                    onFavoriteClick = {
+                        if (!isSelectionMode) {
+                            onFavoriteClick(recipe.id, !recipe.isFavorite)
+                        }
+                    }
+                )
             }
         }
     }
@@ -346,7 +396,7 @@ fun RecipeHorizontalCard(
             Box(modifier = Modifier.width(120.dp).fillMaxHeight()) {
                 Image(
                     painter = painter,
-                    contentDescription = stringResource(Res.string.recipe_image) ,
+                    contentDescription = stringResource(Res.string.recipe_image),
                     contentScale = ContentScale.Crop,
                     modifier = Modifier.fillMaxSize()
                 )
@@ -412,6 +462,69 @@ fun RecipeHorizontalCard(
                     color = Color.DarkGray,
                     maxLines = 3,
                     overflow = TextOverflow.Ellipsis
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun FailedUi(
+    modifier: Modifier,
+    onClickTryAgain: () -> Unit,
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.primaryContainer),
+        verticalArrangement = Arrangement.Center,
+    ) {
+        Row(
+            modifier = modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Text(
+                text = stringResource(Res.string.failed_to_load),
+                color = MaterialTheme.colorScheme.primary,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .padding(24.dp),
+                style = MaterialTheme.typography.titleLarge
+            )
+        }
+
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .aspectRatio(1f)
+                .padding(16.dp),
+            shape = RoundedCornerShape(16.dp),
+        ) {
+            Box(modifier = Modifier.fillMaxSize()) {
+                Image(
+                    painter = painterResource(Res.drawable.error),
+                    contentDescription = stringResource(Res.string.failed_to_load),
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
+        }
+
+        Row(
+            modifier = modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Button(
+                modifier = modifier.padding(24.dp),
+                onClick = { onClickTryAgain.invoke() },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.secondary
+                ),
+            ) {
+                Text(
+                    stringResource(Res.string.try_again),
+                    color = MaterialTheme.colorScheme.onSecondary,
+                    style = MaterialTheme.typography.bodyLarge
                 )
             }
         }
