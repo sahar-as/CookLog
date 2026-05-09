@@ -22,4 +22,8 @@ internal class RecipeRepositoryImpl(
             isFavorite = isFavorite
         )
     }
+
+    override suspend fun deleteRecipe(id: Long) {
+        recipeDao.deleteRecipesById(id)
+    }
 }

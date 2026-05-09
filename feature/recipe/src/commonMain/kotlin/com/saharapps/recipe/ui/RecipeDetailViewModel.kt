@@ -2,6 +2,7 @@ package com.saharapps.recipe.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.saharapps.recipe.domain.DeleteRecipeUseCase
 import com.saharapps.recipe.domain.GetRecipeByIdUseCase
 import com.saharapps.recipe.domain.UpdateFavoriteStatusUseCase
 import com.saharapps.ui.ViewStatus
@@ -13,7 +14,8 @@ import kotlinx.coroutines.launch
 class RecipeDetailViewModel(
     private val getRecipeByIdUseCase: GetRecipeByIdUseCase,
     private val updateFavoriteStatusUseCase: UpdateFavoriteStatusUseCase,
-    ): ViewModel() {
+    private val deleteRecipeUseCase: DeleteRecipeUseCase
+) : ViewModel() {
     private val _recipeUiState = MutableStateFlow(RecipeUiState())
     val recipeUiState = _recipeUiState.asStateFlow()
     fun getRecipeById(id: Long) {
@@ -40,16 +42,23 @@ class RecipeDetailViewModel(
             }
         }
     }
+
     fun updateFavoriteState(
         recipeId: Long,
         isFavorite: Boolean
-    ){
+    ) {
         viewModelScope.launch {
             updateFavoriteStatusUseCase(
                 recipeId = recipeId,
                 isFavorite = isFavorite
             )
             getRecipeById(recipeId)
+        }
+    }
+
+    fun deleteRecipe(recipeId: Long) {
+        viewModelScope.launch {
+            deleteRecipeUseCase(recipeId)
         }
     }
 }

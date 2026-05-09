@@ -59,7 +59,6 @@ fun RecipeDetailScreen(
     viewModel: RecipeDetailViewModel,
     onBack: () -> Unit,
     onEdit: (Long, Long) -> Unit,
-    onDelete: () -> Unit,
 ) {
     val uiState by viewModel.recipeUiState.collectAsStateWithLifecycle()
     LaunchedEffect(recipeId) {
@@ -81,7 +80,12 @@ fun RecipeDetailScreen(
                     containerColor = MaterialTheme.colorScheme.primary,
                     contentColor = MaterialTheme.colorScheme.onPrimary,
                     actions = {
-                        IconButton(onClick = onDelete) {
+                        IconButton(
+                            onClick = {
+                                viewModel.deleteRecipe(recipeId)
+                                onBack.invoke()
+                            }
+                        ) {
                             Icon(
                                 Icons.Default.Delete,
                                 contentDescription = null,

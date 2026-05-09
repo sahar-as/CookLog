@@ -64,7 +64,6 @@ fun CookLogNavHost(navController: NavHostController) {
                 recipeId = args.recipeId,
                 viewModel = recipeDetailViewModel,
                 onBack = { navController.popBackStack() },
-                onDelete = {},
                 onEdit = { catalogId, recipeId ->
                     navController.navigate(Route.RecipeEdit(catalogId, recipeId))
                 },

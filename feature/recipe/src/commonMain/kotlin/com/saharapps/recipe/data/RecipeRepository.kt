@@ -9,4 +9,5 @@ interface RecipeRepository {
         recipeId: Long,
         isFavorite: Boolean
     )
+    suspend fun deleteRecipe(id: Long)
 }

@@ -2,6 +2,8 @@ package com.saharapps.recipe.di
 
 import com.saharapps.recipe.data.RecipeRepository
 import com.saharapps.recipe.data.RecipeRepositoryImpl
+import com.saharapps.recipe.domain.DeleteRecipeUseCase
+import com.saharapps.recipe.domain.DeleteRecipeUseCaseImpl
 import com.saharapps.recipe.domain.GetRecipeByIdUseCase
 import com.saharapps.recipe.domain.GetRecipeByIdUseCaseImpl
 import com.saharapps.recipe.domain.SaveRecipeUseCase
@@ -18,6 +20,7 @@ val recipeModule = module {
     factory<GetRecipeByIdUseCase> { GetRecipeByIdUseCaseImpl(get()) }
     factory<SaveRecipeUseCase> { SaveRecipeUseCaseImpl(get()) }
     factory<UpdateFavoriteStatusUseCase> { UpdateFavoriteStatusUseCaseImpl(get()) }
+    factory<DeleteRecipeUseCase> { DeleteRecipeUseCaseImpl(get()) }
     viewModel {
         RecipeEditViewModel(
             get(),
@@ -26,6 +29,7 @@ val recipeModule = module {
     }
     viewModel {
         RecipeDetailViewModel(
+            get(),
             get(),
             get()
         )
