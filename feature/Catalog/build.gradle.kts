@@ -26,6 +26,9 @@ kotlin {
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
+            implementation(kotlin("test"))
+            implementation(libs.kotlinx.coroutine.test)
+            implementation(libs.kotlin.test.turbin)
         }
     }
 
